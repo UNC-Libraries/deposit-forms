@@ -9,6 +9,7 @@
 	<packaging>war</packaging>
 	<name>Deposit Forms Webapp</name>
 	<url>http://maven.apache.org</url>
+	<inceptionYear>2010</inceptionYear>
 	<properties>
 		<spring.version>3.0.6.RELEASE</spring.version>
 		<spring.ws.version>2.0.1.RELEASE</spring.ws.version>
@@ -38,6 +39,31 @@
 							<Implementation-Build>${buildNumber}</Implementation-Build>
 						</manifestEntries>
 					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>etc/header.txt</header>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>true</aggregate>
+					<properties>
+						<year>${project.inceptionYear}</year>
+					</properties>
+					<includes>
+						<include>src/**</include>
+					</includes>
+					<excludes>
+						<exclude>**/bin/**</exclude>
+						<exclude>**/js/**</exclude>
+						<exclude>src/test/resources/*.form</exclude>
+					</excludes>
+					<mapping>
+						<sch>XML_STYLE</sch>
+					</mapping>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 		</plugins>
