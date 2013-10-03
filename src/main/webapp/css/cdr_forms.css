@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *		 http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,16 +13,68 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+body {
+	font-size: 16px;
+	color: #555555;
+}
+
+#header {
+	height: 95px;
+}
+
+#pagewrap_inside {
+	background-color: none;
+}
+
+.content-wrap {
+	padding: 1px 0;
+	background-color: #ffffff;
+	
+}
+
+form {
+	float: none;
+}
+
+h2 {
+	 color: #335;
+	 font-weight: bold;
+	 border-bottom: 1px dotted #A0D0D0;
+}
+
+h3 {
+	color: #444444;
+	padding-bottom: 1px;
+	font-size: 14px;
+	max-width: 750px;
+}
+
+p {
+	margin-left: 0.1em;
+	margin-bottom: 0;
+}
+
+h3 {
+	margin-top: 10px;
+}
+
+form h3 {
+	margin-top: 0px;
+}
+
 .form_field {
 	margin-top: 0.8em;
 }
 
 .form_field label {
+	font-size: 15px;
 	float: left;
 	width: 12em;
 	text-align: right; 
 	vertical-align: baseline; 
 	margin-right: 1em;
+	overflow: visible;
 }
 
 .form_field br {
@@ -38,17 +90,6 @@
 	color: red;
 }
 
-p {
-	margin-left: 1em;
-	margin-bottom: 0;
-}
-
-h2 {
-	 color: #335;
-	 font-weight: bold;
-	 border-bottom: 1px dotted #A0D0D0;
-}
-
 .indented_block {
 	margin: 0em 2em;
 }
@@ -57,8 +98,13 @@ h2 {
 	margin-top: 1em;
 }
 
+.metadata_block:first-of-type {
+	margin-top: 0;
+}
+
 .metadata_block h3 {
-	margin-bottom: 15px;
+	margin-bottom: 13px;
+	border-bottom: 1px dotted #EEEEEE;
 }
 
 .submit_container {
@@ -70,6 +116,7 @@ h2 {
 	font-size: 14px;
 	font-family: serif;
 	vertical-align: 50%;
+	*vertical-align: 0%;
 	font-style: italic;
 	z-index: 100;
 	font-weight: bold;
@@ -79,8 +126,12 @@ h2 {
 	width: 100px;
 }
 
-.form_field.width_Normal input, .form_field.width_Normal textarea, .form_field.width_Normal select {
+.form_field.width_Normal input, .form_field.width_Normal textarea {
 	width: 350px;
+}
+
+.form_field.width_Normal select {
+	width: 356px;
 }
 
 .form_field.width_Long input, .form_field.width_Long textarea, .form_field.width_Long select {
@@ -144,8 +195,7 @@ textarea, .textareaClone {
 }
 
 input, textarea, select {
-	font-family: monospace;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 input[readonly] {
@@ -178,6 +228,13 @@ input[readonly] {
 	margin-bottom: 10px;
 }
 
+#login_block {
+	text-align: center;
+	font-size: 15px;
+	padding-top: 8px;
+	font-weight: bold;
+}
+
 
 /* Autocomplete
 ----------------------------------*/
@@ -185,15 +242,15 @@ input[readonly] {
 	position: absolute; 
 	cursor: default;
 	background-color: white;
-    border: 2px solid #CECECE;
-    font-size: 12px;
-    padding: 0;
-    z-index: 99999;
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background-color: #fff;
-    width: 300px;
+	border: 2px solid #CECECE;
+	font-size: 12px;
+	padding: 0;
+	z-index: 99999;
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: #fff;
+	width: 300px;
 }
 
 
@@ -205,49 +262,49 @@ input[readonly] {
 /* Menu
 ----------------------------------*/
 .ui-menu {
-        list-style:none;
-        padding: 2px;
-        margin: 0;
-        display:block;
+		list-style:none;
+		padding: 2px;
+		margin: 0;
+		display:block;
 }
 .ui-menu .ui-menu {
-        margin-top: -3px;
+		margin-top: -3px;
 }
 .ui-menu .ui-menu-item {
-        width: 100%;
-        margin: 0;
-        padding: 0;
+		width: 100%;
+		margin: 0;
+		padding: 0;
 }
 .ui-menu .ui-menu-item a {
-        text-decoration:none;
-        display:block;
-        line-height:1.5;
-        zoom:1;
+		text-decoration:none;
+		display:block;
+		line-height:1.5;
+		zoom:1;
 }
 .ui-menu .ui-menu-item a.ui-state-hover,
 .ui-menu .ui-menu-item a.ui-state-active {
-        margin: -1px;
+		margin: -1px;
 }
 
 .ui-autocomplete ul {
-    list-style: none outside none;
-    margin: 15px 0 -4px;
-    padding: 4px;
+	list-style: none outside none;
+	margin: 15px 0 -4px;
+	padding: 4px;
 }
 .ui-autocomplete li {
-    color: #000000;
-    display: block;
-    overflow: hidden;
-    padding: 5px 0;
-    text-align: left;
-    text-decoration: none;
-    text-indent: 0;
+	color: #000000;
+	display: block;
+	overflow: hidden;
+	padding: 5px 0;
+	text-align: left;
+	text-decoration: none;
+	text-indent: 0;
 }
 .ui-autocomplete li a {
 	padding: 0.2em 0.4em;
-    padding-left: 1.7em;
-    text-indent: -1.5em;
-    font-weight: normal;
+	padding-left: 1.7em;
+	text-indent: -1.5em;
+	font-weight: normal;
 }
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus {
