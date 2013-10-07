@@ -243,6 +243,19 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 						<form:errors cssClass="red" path="files[${deposit.blockFileIndexMap[element]}]" />
 					</div>
 				</div>
+			<% } else if (status.getValue() instanceof MajorBlock) { %>
+				<div class="metadata_block">
+					<div class="indented_block">
+						<div class="form_field width_Normal">
+							<label>${status.value.label}</label>
+							<form:select path="form.elements[${elementRow.index}].selectedMajorIndex">
+								<c:forEach items="${status.value.majorEntries}" var="majorEntry" varStatus="majorRow">
+									<form:option value="${majorRow.index}">${majorEntry.name}</form:option>
+								</c:forEach>
+							</form:select>
+						</div>
+					</div>
+				</div>
 			<% } else if(MetadataBlock.class.isInstance(status.getValue())) { 
 					MetadataBlock mb = (MetadataBlock)status.getValue(); %>
 					<div class="metadata_block">
