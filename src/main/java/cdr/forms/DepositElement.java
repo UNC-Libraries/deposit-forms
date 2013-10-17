@@ -45,18 +45,18 @@ public class DepositElement {
 		
 		DepositEntry depositEntry = new DepositEntry();
 		
-		ArrayList<DepositField<?>> fields = new ArrayList<DepositField<?>>();
+		List<DepositField<?>> fields = new ArrayList<DepositField<?>>();
 		
 		if (formElement instanceof MetadataBlock) {
 			
 			for (InputField<?> field : ((MetadataBlock) formElement).getPorts()) {
 				if (field instanceof DateInputField) {
-					DepositField<Date> depositField = new DepositField<Date>();
-					depositField.value = new Date();
+					DateDepositField depositField = new DateDepositField();
+					depositField.setValue(new Date());
 					fields.add(depositField);
 				} else if (field instanceof TextInputField) {
-					DepositField<String> depositField = new DepositField<String>();
-					depositField.value = new String();
+					TextDepositField depositField = new TextDepositField();
+					depositField.setValue(new String());
 					fields.add(depositField);
 				} else {
 					throw new Error("Unknown input field type");
@@ -65,7 +65,7 @@ public class DepositElement {
 			
 		} else if (formElement instanceof FileBlock) {
 			
-			fields.add(new DepositField<DepositFile>());
+			fields.add(new FileDepositField());
 			
 		}
 		

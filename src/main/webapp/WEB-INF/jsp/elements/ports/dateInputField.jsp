@@ -17,8 +17,8 @@
 			<form:select path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}">
 				<%-- Select the year from the form bean or the current year if none is provided --%>
 				<c:choose>
-					<c:when test="${deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].enteredValue != null}">
-						<c:set var="selectedIndex" value="${currentYear + 10 - (deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].enteredValue.year + 1900)}"/>
+					<c:when test="${deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value != null}">
+						<c:set var="selectedIndex" value="${currentYear + 10 - (deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value.year + 1900)}"/>
 					</c:when>
 					<c:otherwise>
 						<c:set var="selectedIndex" value="${10}"/>

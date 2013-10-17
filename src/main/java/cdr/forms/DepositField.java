@@ -1,15 +1,8 @@
 package cdr.forms;
 
-public class DepositField<F> {
+public interface DepositField<F> {
 
-	public F value;
-	
-	public F getValue() {
-		return value;
-	}
-	
-	public void setValue(F value) {
-		this.value = value;
-	}
+	public F getValue();
+	public void setValue(F value);
 	
 }

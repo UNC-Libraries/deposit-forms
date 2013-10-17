@@ -15,6 +15,7 @@
  */
 package cdr.forms;
 
+import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -165,6 +166,7 @@ public class FormController {
 		binder.registerCustomEditor(java.util.Date.class, new DateEditor());
 		binder.registerCustomEditor(java.lang.String.class, new StringCleanerTrimmerEditor(true));
 		binder.registerCustomEditor(DepositFile.class, new DepositFileEditor());
+		
 		binder.setBindEmptyMultipartFiles(false);
 	}
 	

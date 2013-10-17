@@ -91,6 +91,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3._1999.xlink.XlinkPackage;
 
+import crosswalk.DateInputField;
 import crosswalk.FileBlock;
 import crosswalk.Form;
 import crosswalk.FormElement;
@@ -99,6 +100,7 @@ import crosswalk.MetadataBlock;
 import crosswalk.OutputElement;
 import crosswalk.OutputMetadataSections;
 import crosswalk.OutputProfile;
+import crosswalk.TextInputField;
 
 import cdr.forms.DepositResult.Status;
 
@@ -325,8 +327,15 @@ public class SwordDepositHandler implements DepositHandler {
 					
 					int portIndex = 0;
 					
-					for (@SuppressWarnings("rawtypes") InputField inputField : metadataBlock.getPorts()) {
-						inputField.setEnteredValue(entry.getFields().get(portIndex).getValue());
+					for (InputField<?> inputField : metadataBlock.getPorts()) {
+						if (inputField instanceof DateInputField) {
+							((DateInputField) inputField).setEnteredValue((Date) entry.getFields().get(portIndex).getValue());
+						} else if (inputField instanceof TextInputField) {
+							((TextInputField) inputField).setEnteredValue((String) entry.getFields().get(portIndex).getValue());
+						} else {
+							throw new Error("Unknown input field type");
+						}
+						
 						portIndex++;
 					}
 
