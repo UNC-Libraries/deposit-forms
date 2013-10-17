@@ -47,6 +47,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -160,7 +161,6 @@ public class FormController {
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new DepositValidator());
 		binder.registerCustomEditor(java.util.Date.class, new DateEditor());
 		binder.registerCustomEditor(java.lang.String.class, new StringCleanerTrimmerEditor(true));
 		binder.registerCustomEditor(DepositFile.class, new DepositFileEditor());
@@ -249,7 +249,9 @@ public class FormController {
 			@Valid @ModelAttribute("deposit") Deposit deposit,
 			BindingResult errors,
 			Principal user,
-			SessionStatus sessionStatus, HttpServletRequest request,
+			SessionStatus sessionStatus,
+			@RequestParam(value="deposit", required=false) String submitDepositAction,
+			HttpServletRequest request,
 			HttpServletResponse response) throws PermissionDeniedException {
 		
 		// Check that the form submitted by the user matches the one in the session
@@ -280,6 +282,15 @@ public class FormController {
 		
 		for (DepositFile depositFile : deposit.getAllFiles())
 			scanDepositFile(depositFile, signatures);
+		
+		// If the "submit deposit" button was pressed, run the validator.
+		
+		if (submitDepositAction != null) {
+		
+			Validator validator = new DepositValidator();
+			validator.validate(deposit, errors);
+		
+		}
 		
 		// If the deposit has validation errors and no virus signatures were detected, display errors
 		

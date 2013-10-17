@@ -271,7 +271,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	</div>
 	
 	<div class="submit_container">
-		<input type="submit" value="submit deposit" />
+		<input type="submit" name="deposit" value="submit deposit" />
 	</div>
 </form:form>
 </div>
