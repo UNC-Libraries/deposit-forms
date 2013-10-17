@@ -3,7 +3,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="crosswalk.*"%>
-<div class="form_field width_${port.width.name}">
+<div class="form_field width_${port.width.name} ${entryRow.index != 0 && portRow.index == 0 ? "contains_repeat_control" : ""}">
+
+	<c:if test="${entryRow.index != 0 && portRow.index == 0}">
+		<input type="image" src="images/minus.png" name="_elements[${elementRow.index}].entries[${entryRow.index}]" value="1" class="repeat_control"/>
+	</c:if>
+
 	<label><c:if test="${not empty port.usage}"><a title="${port.usage}">(i)</a>&nbsp;</c:if><c:out value="${port.label}"/></label>
 	<c:if test="${port.width.name == 'FullLine' && port.type.name != 'MultipleLines'}">
 		<br/>
@@ -12,17 +17,17 @@
 		<c:when test="${port.type.name == 'MultipleLines'}">
 			<div class="multi_notes">
 				<c:if test="${port.required}"><span class="red">*</span></c:if>
-				<form:errors cssClass="red" path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" />
+				<form:errors cssClass="red" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" />
 			</div>
 			<c:if test="${port.width.name == 'FullLine'}">
 				<br/>
 			</c:if>													
 			<c:choose>
 				<c:when test="${port.maxCharacters != null}">
-					<form:textarea path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}"/>
+					<form:textarea path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}"/>
 				</c:when>
 				<c:otherwise>
-					<form:textarea path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" placeholder="${port.usage}"/>
+					<form:textarea path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" placeholder="${port.usage}"/>
 				</c:otherwise>
 			</c:choose>
 			<br/>
@@ -34,15 +39,15 @@
 						<c:when test="${port.allowFreeText}">
 							<c:choose>
 								<c:when test="${port.validValues == null || port.validValues.size() == 0}">
-									<form:input path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}" cssClass="cv_${port.vocabularyURL.hashCode()}"/>
+									<form:input path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}" cssClass="cv_${port.vocabularyURL.hashCode()}"/>
 								</c:when>
 								<c:otherwise>
-									<form:input path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}" cssClass="cv_${port.vocabularyURL.hashCode()}_elements${elementRow.index}.ports${portRow.index}.enteredValue"/>
+									<form:input path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}" cssClass="cv_${port.vocabularyURL.hashCode()}_elements${elementRow.index}.ports${portRow.index}.enteredValue"/>
 								</c:otherwise>
 							</c:choose>
 						</c:when>
 						<c:otherwise>
-							<form:select path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}">
+							<form:select path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}">
 								<form:options items="${vocabURLMap[port.vocabularyURL.hashCode().toString()]}"/>
 								<form:options items="${port.validValues}"/>
 							</form:select>
@@ -52,10 +57,10 @@
 				<c:otherwise>
 					<c:choose>
 						<c:when test="${port.validValues == null || port.validValues.size() == 0}">
-							<form:input path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}"/>
+							<form:input path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" placeholder="${port.usage}" maxlength="${port.maxCharacters}"/>
 						</c:when>
 						<c:otherwise>
-							<form:select path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}">
+							<form:select path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}">
 								<form:options items="${port.validValues}"/>
 							</form:select>
 						</c:otherwise>
@@ -63,7 +68,7 @@
 				</c:otherwise>
 			</c:choose>
 			<c:if test="${port.required}"><span class="red">*</span></c:if>
-			<form:errors cssClass="red" path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" />
+			<form:errors cssClass="red" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" />
 			<br/>
 		</c:otherwise>
 	</c:choose>

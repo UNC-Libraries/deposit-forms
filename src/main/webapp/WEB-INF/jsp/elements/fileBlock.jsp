@@ -3,24 +3,24 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="crosswalk.*"%>
-<c:if test="${not empty element.name}">
-<br/><h3><c:out value="${element.name}"/></h3>
+<c:if test="${not empty element.formElement.name}">
+<br/><h3><c:out value="${element.formElement.name}"/></h3>
 </c:if>
-<c:if test="${not empty element.description}">
-<p><c:out value="${element.description}"/></p>
+<c:if test="${not empty element.formElement.description}">
+<p><c:out value="${element.formElement.description}"/></p>
 </c:if>
 
 <div class="indented_block">
-	<div class="form_field file_field ${not empty deposit.files[deposit.blockFileIndexMap[element]] ? "filled" : ""}">
-		<label><c:if test="${not empty element.usage}"><a title="${element.usage}">(i)</a></c:if>&nbsp;</label>
-		<input name="files[${deposit.blockFileIndexMap[element]}]" type="file" class="file" size="40"/>
-		<c:if test="${not empty deposit.files[deposit.blockFileIndexMap[element]]}">
+	<div class="form_field file_field ${not empty deposit.files[deposit.blockFileIndexMap[element.formElement]] ? "filled" : ""}">
+		<label><c:if test="${not empty element.formElement.usage}"><a title="${element.formElement.usage}">(i)</a></c:if>&nbsp;</label>
+		<input name="files[${deposit.blockFileIndexMap[element.formElement]}]" type="file" class="file" size="40"/>
+		<c:if test="${not empty deposit.files[deposit.blockFileIndexMap[element.formElement]]}">
 			<span class="description">
-				<b><c:out value="${deposit.files[deposit.blockFileIndexMap[element]].filename}"/></b>
-				<input type="submit" name="_files[${deposit.blockFileIndexMap[element]}]" value="Remove file" class="remove"/>
+				<b><c:out value="${deposit.files[deposit.blockFileIndexMap[element.formElement]].filename}"/></b>
+				<input type="submit" name="_files[${deposit.blockFileIndexMap[element.formElement]}]" value="Remove file" class="remove"/>
 			</span>
 		</c:if>
-		<c:if test="${element.required}"><span class="red">*</span></c:if>
-		<form:errors cssClass="red" path="files[${deposit.blockFileIndexMap[element]}]" />
+		<c:if test="${element.formElement.required}"><span class="red">*</span></c:if>
+		<form:errors cssClass="red" path="files[${deposit.blockFileIndexMap[element.formElement]}]" />
 	</div>
 </div>

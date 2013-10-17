@@ -7,18 +7,18 @@
 	<label><c:if test="${not empty port.usage}"><a title="${port.usage}">(i)</a>&nbsp;</c:if><c:out value="${port.label}"/></label>
 	<c:choose>
 		<c:when test="${port.datePrecision.name == 'month'}">
-			<form:input cssClass="monthpicker" path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" />
+			<form:input cssClass="monthpicker" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
 		</c:when>
 		<c:when test="${port.datePrecision.name == 'day'}">
-			<form:input cssClass="datepicker" path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}" />
+			<form:input cssClass="datepicker" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
 		</c:when>
 		<c:when test="${port.datePrecision.name == 'year'}">
 			<%-- Display a select of years, from 190 in the past to 10 in the future --%>
-			<form:select path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" title="${port.usage}">
+			<form:select path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}">
 				<%-- Select the year from the form bean or the current year if none is provided --%>
 				<c:choose>
-					<c:when test="${deposit.form.elements[elementRow.index].ports[portRow.index].enteredValue != null}">
-						<c:set var="selectedIndex" value="${currentYear + 10 - (deposit.form.elements[elementRow.index].ports[portRow.index].enteredValue.year + 1900)}"/>
+					<c:when test="${deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].enteredValue != null}">
+						<c:set var="selectedIndex" value="${currentYear + 10 - (deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].enteredValue.year + 1900)}"/>
 					</c:when>
 					<c:otherwise>
 						<c:set var="selectedIndex" value="${10}"/>
@@ -38,6 +38,6 @@
 		</c:when>
 	</c:choose>
 	<c:if test="${port.required}"><span class="red">*</span></c:if>
-	<form:errors cssClass="red" path="form.elements[${elementRow.index}].ports[${portRow.index}].enteredValue" />
+	<form:errors cssClass="red" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" />
 	<br/>
 </div>

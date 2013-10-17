@@ -211,16 +211,17 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	the top to act as the default. --%>
 	<input type="submit" value="submit deposit" class="hidden_top_submit"/>
 	
-	<c:forEach items="${deposit.form.elements}" var="element" varStatus="elementRow">
-		<spring:bind path="deposit.form.elements[${elementRow.index}]" ignoreNestedPath="true">
+	<c:forEach items="${deposit.elements}" var="element" varStatus="elementRow">
+		<spring:bind path="deposit.elements[${elementRow.index}]" ignoreNestedPath="true">
 		
-			<% if (Paragraph.class.isInstance(status.getValue())) { %>
+			<% if (Paragraph.class.isInstance(((DepositElement) pageContext.getAttribute("element")).getFormElement())) { %>
 				<%@include file="elements/paragraph.jsp" %>
-			<% } else if (FileBlock.class.isInstance(status.getValue())) { %>
+			<% } else if (FileBlock.class.isInstance(((DepositElement) pageContext.getAttribute("element")).getFormElement())) { %>
 				<%@include file="elements/fileBlock.jsp" %>
-			<% } else if (MetadataBlock.class.isInstance(status.getValue())) { %>
+			<% } else if (MetadataBlock.class.isInstance(((DepositElement) pageContext.getAttribute("element")).getFormElement())) { %>
 				<%@include file="elements/metadataBlock.jsp" %>
 			<% } %>
+			
 		</spring:bind>
 	</c:forEach>
 	

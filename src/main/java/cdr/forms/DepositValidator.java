@@ -78,20 +78,33 @@ public class DepositValidator implements Validator {
 		
 		// Validate the form
 		
-		for (FormElement el : form.getElements()) {
-			if (MetadataBlock.class.isInstance(el)) {
-				MetadataBlock mb = (MetadataBlock) el;
-				int mbIdx = form.getElements().indexOf(mb);
-				for (InputField<?> in : mb.getPorts()) {
-					int inIdx = mb.getPorts().indexOf(in);
-					if(in.isRequired()) {
-						StringBuilder path = new StringBuilder().append("form.elements[").append(mbIdx)
-								.append("].ports[").append(inIdx).append("].enteredValue");
-						LOG.debug(in.getLabel()+ " | " + path+ " is a required field");
-						ValidationUtils.rejectIfEmptyOrWhitespace(errors, path.toString(), "field.required", "This field is required.");
+		int elementIndex = 0;
+		
+		for (DepositElement element : deposit.getElements()) {
+			
+			if (element.getFormElement() instanceof MetadataBlock) {
+				MetadataBlock metadataBlock = (MetadataBlock) element.getFormElement();
+				int fieldIndex = 0;
+				
+				for (InputField<?> inputField : metadataBlock.getPorts()) {
+					
+					if (inputField.isRequired()) {
+						int entryIndex = 0;
+						
+						for (DepositEntry entry : element.getEntries()) {
+							if (entry != null) {
+								String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + fieldIndex + "].value";
+								ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
+							}
+							entryIndex++;
+						}
 					}
+					
+					fieldIndex++;
 				}
 			}
+			
+			elementIndex++;
 		}
 		
 	}

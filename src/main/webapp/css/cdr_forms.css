@@ -107,6 +107,26 @@ form h3 {
 	border-bottom: 1px dotted #EEEEEE;
 }
 
+.file_block h3 {
+	margin-bottom: 13px;
+	border-bottom: 1px dotted #EEEEEE;
+}
+
+.entry_block {
+	border-bottom: 1px dotted #EEEEEE;
+	padding-bottom: 13px;
+}
+
+.indented_block .add {
+	margin-left: 195px;
+	margin-top: 13px;
+}
+
+.entry_block .remove {
+	margin-left: 195px;
+	margin-top: 13px;
+}
+
 .submit_container {
 	text-align: center;
 	margin: 2em;
@@ -233,6 +253,38 @@ input[readonly] {
 	font-size: 15px;
 	padding-top: 8px;
 	font-weight: bold;
+}
+
+
+.metadata_block h3 {
+	width: auto;
+	max-width: inherit;
+	border-bottom-color: #ccc;
+}
+	
+.entry_block {
+	border-bottom: 1px dotted #ddd;
+	padding-bottom: 13px;
+	padding-left: 32px;
+}
+
+.repeat_control {
+	float: left;
+	margin: 0;
+	width: auto !important;
+}
+
+.form_field.contains_repeat_control {
+	margin-left: -30px;
+}
+
+.add_another_block {
+	padding-left: 32px;
+}
+
+.add_another_block label {
+	font-style: italic;
+	color: #777;
 }
 
 

@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -203,6 +204,18 @@ public class FormController {
 
 		deposit.setForm(form);
 		deposit.setFormId(formId);
+		deposit.setElements(new ArrayList<DepositElement>());
+		
+		for (FormElement element : form.getElements()) {
+			
+			DepositElement depositElement = new DepositElement();
+			depositElement.setFormElement(element);
+			depositElement.setEntries(new ArrayList<DepositEntry>());
+			depositElement.appendEntry();
+			
+			deposit.getElements().add(depositElement);
+			
+		}
 		
 		//
 		
@@ -276,6 +289,24 @@ public class FormController {
 		if (user != null)
 			deposit.getForm().setCurrentUser(user.getName());
 		
+		// Remove entries set to null, append an entry for elements with append set
+		
+		for (DepositElement element : deposit.getElements()) {
+		
+			Iterator<DepositEntry> iterator = element.getEntries().iterator();
+	
+			while (iterator.hasNext()) {
+				if (iterator.next() == null)
+					iterator.remove();
+			}
+			
+			if (element.getAppend() != null) {
+				element.appendEntry();
+				element.setAppend(null);
+			}
+			
+		}
+		
 		// Check the deposit's files for virus signatures
 		
 		IdentityHashMap<DepositFile, String> signatures = new IdentityHashMap<DepositFile, String>();
@@ -296,6 +327,12 @@ public class FormController {
 		
 		if (errors.hasErrors() && signatures.size() == 0) {
 			LOG.debug(errors.getErrorCount() + " errors");
+			return "form";
+		}
+		
+		// If the "submit deposit" button was not pressed, render the form again
+		
+		if (submitDepositAction == null) {
 			return "form";
 		}
 		

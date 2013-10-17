@@ -33,6 +33,7 @@ public class Deposit {
 	private IdentityHashMap<FileBlock, Integer> blockFileIndexMap;
 	private DepositFile mainFile;
 	private DepositFile[] supplementalFiles;
+	private List<DepositElement> elements;
 
 	public Form getForm() {
 		return form;
@@ -118,6 +119,14 @@ public class Deposit {
 		}
 		
 		return files;
+	}
+
+	public List<DepositElement> getElements() {
+		return elements;
+	}
+
+	public void setElements(List<DepositElement> elements) {
+		this.elements = elements;
 	}
 
 }

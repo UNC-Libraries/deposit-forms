@@ -94,6 +94,7 @@ import org.w3._1999.xlink.XlinkPackage;
 import crosswalk.FileBlock;
 import crosswalk.Form;
 import crosswalk.FormElement;
+import crosswalk.InputField;
 import crosswalk.MetadataBlock;
 import crosswalk.OutputElement;
 import crosswalk.OutputMetadataSections;
@@ -181,7 +182,7 @@ public class SwordDepositHandler implements DepositHandler {
 		
 		// Prepare the zip file for deposit
 		
-		gov.loc.mets.DocumentRoot metsDocumentRoot = makeMets(form, deposit.getMainFile(), files, fileFilenameMap, fileBlockMap);
+		gov.loc.mets.DocumentRoot metsDocumentRoot = makeMets(deposit, form, deposit.getMainFile(), files, fileFilenameMap, fileBlockMap);
 		File zipFile = makeZipFile(metsDocumentRoot, files, fileFilenameMap);
 		
 		
@@ -301,7 +302,7 @@ public class SwordDepositHandler implements DepositHandler {
 		
 	}
 	
-	private MdSecType makeMetadata(OutputProfile profile, Form form) {
+	private MdSecType makeMetadata(OutputProfile profile, Form form, Deposit deposit) {
 		
 		EClass outputElementClass = null;
 		
@@ -312,13 +313,31 @@ public class SwordDepositHandler implements DepositHandler {
 		
 		EObject outputElement = outputElementClass.getEPackage().getEFactoryInstance().create(outputElementClass);
 		
-		for (FormElement fe : form.getElements()) {
-			if (fe instanceof MetadataBlock) {
-				MetadataBlock mb = (MetadataBlock) fe;
-				for (OutputElement oe : mb.getElements()) {
-					oe.updateRecord(outputElement);
+		for (DepositElement element : deposit.getElements()) {
+			if (element.getFormElement() instanceof MetadataBlock) {
+				
+				MetadataBlock metadataBlock = (MetadataBlock) element.getFormElement();
+				
+				// For each entry, "fill out" the metadata block's ports using the values from the entry's fields.
+				// FIXME: clone metadata block rather than reusing the same instance?
+				
+				for (DepositEntry entry : element.getEntries()) {
+					
+					int portIndex = 0;
+					
+					for (@SuppressWarnings("rawtypes") InputField inputField : metadataBlock.getPorts()) {
+						inputField.setEnteredValue(entry.getFields().get(portIndex).getValue());
+						portIndex++;
+					}
+
+					for (OutputElement oe : metadataBlock.getElements()) {
+						oe.updateRecord(outputElement);
+					}
+					
 				}
+				
 			}
+			
 		}
 		
 		if (outputElement.eContents() == null || outputElement.eContents().isEmpty())
@@ -348,7 +367,8 @@ public class SwordDepositHandler implements DepositHandler {
 		
 	}
 	
-	private gov.loc.mets.DocumentRoot makeMets(Form form,
+	private gov.loc.mets.DocumentRoot makeMets(Deposit deposit,
+			Form form,
 			DepositFile mainFile,
 			List<DepositFile> files,
 			IdentityHashMap<DepositFile, String> filenames,
@@ -411,7 +431,7 @@ public class SwordDepositHandler implements DepositHandler {
 			int i = 0;
 		
 			for (OutputProfile profile : form.getOutputProfiles()) {
-				MdSecType mdSec = makeMetadata(profile, form);
+				MdSecType mdSec = makeMetadata(profile, form, deposit);
 				
 				if (mdSec != null) {
 					mdSec.setID("md_" + i);
