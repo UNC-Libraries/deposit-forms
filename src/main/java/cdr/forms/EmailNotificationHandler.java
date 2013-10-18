@@ -177,8 +177,9 @@ public class EmailNotificationHandler implements NotificationHandler {
 			if(administratorAddress != null && administratorAddress.trim().length() > 0) {
 				message.addTo(this.administratorAddress);
 			}
-			if(form.getEmailDepositNoticeTo() != null && !form.getEmailDepositNoticeTo().isEmpty()) {
-				for(String addy : form.getEmailDepositNoticeTo()) {
+			List<String> emailDepositNoticeTo = form.getUnifiedEmailDepositNoticeTo();
+			if(emailDepositNoticeTo != null && !emailDepositNoticeTo.isEmpty()) {
+				for(String addy : emailDepositNoticeTo) {
 					message.addTo(addy);
 				}
 			}
@@ -227,8 +228,8 @@ public class EmailNotificationHandler implements NotificationHandler {
 	}
 	
 	private void sendNotice(HashMap<String, Object> model, Form form) {
-		
-		if (form.getEmailDepositNoticeTo() == null || form.getEmailDepositNoticeTo().isEmpty())
+		List<String> emailDepositNoticeTo = form.getUnifiedEmailDepositNoticeTo();
+		if (emailDepositNoticeTo == null || emailDepositNoticeTo.isEmpty())
 			return;
 		
 		StringWriter htmlsw = new StringWriter();
@@ -248,7 +249,7 @@ public class EmailNotificationHandler implements NotificationHandler {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage,
 					MimeMessageHelper.MULTIPART_MODE_MIXED);
-			for(String addy : form.getEmailDepositNoticeTo()) {
+			for(String addy : emailDepositNoticeTo) {
 				message.addTo(addy);
 			}
 			message.setSubject("Deposit to " + form.getTitle() + " by "+form.getCurrentUser());

@@ -220,6 +220,8 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 				<%@include file="elements/fileBlock.jsp" %>
 			<% } else if (MetadataBlock.class.isInstance(((DepositElement) pageContext.getAttribute("element")).getFormElement())) { %>
 				<%@include file="elements/metadataBlock.jsp" %>
+			<% } else if (MajorBlock.class.isInstance(((DepositElement) pageContext.getAttribute("element")).getFormElement())) { %>
+				<%@include file="elements/majorBlock.jsp" %>
 			<% } %>
 			
 		</spring:bind>
