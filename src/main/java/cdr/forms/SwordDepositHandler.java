@@ -671,29 +671,6 @@ public class SwordDepositHandler implements DepositHandler {
 
 	}
 
-	private void updateAccessControls(AmdSecType amdSec, Form form) {
-		AccessControlType accessControl = null;
-		
-
-		// Set publication status 
-		if (form.isReviewBeforePublication()) {
-			accessControl = getRightsMD(amdSec);
-			accessControl.setPublished(false);
-		}
-		
-		// Set 
-		MajorBlock majorBlock = null;
-		for (FormElement fe : form.getElements()) {
-			if (fe instanceof MajorBlock) {
-				majorBlock = (MajorBlock) fe;
-				break;
-			}
-		}
-		if (majorBlock != null) {
-
-		}
-	}
-
 	/**
 	 * Retrieves the Rights metadata block from the given administrative metadata section if it is present. If it is not
 	 * present, then it is created and returned.
