@@ -41,13 +41,31 @@ public class DepositElement {
 		this.append = append;
 	}
 	
+	/**
+	 * Appends a new entry to the entries array, based on this element's
+	 * FormElement.
+	 */
+	
 	public void appendEntry() {
+		
+		// If our form element is a metadata block and we have added as many entries
+		// as the maxRepeat attribute, silently refuse to add more entries.
+		
+		if (formElement instanceof MetadataBlock) {
+			if (entries.size() >= ((MetadataBlock) formElement).getMaxRepeat()) {
+				return;
+			}
+		}
+		
+		// Create a new instance of DepositEntry. If this element's FormElement
+		// is an instance of MetadataBlock, a list of DepositField is created, one
+		// field for every port. Otherwise, the entry's list of fields is left unset.
 		
 		DepositEntry depositEntry = new DepositEntry();
 		
-		List<DepositField<?>> fields = new ArrayList<DepositField<?>>();
-		
 		if (formElement instanceof MetadataBlock) {
+			
+			List<DepositField<?>> fields = new ArrayList<DepositField<?>>();
 			
 			for (InputField<?> field : ((MetadataBlock) formElement).getPorts()) {
 				if (field instanceof DateInputField) {
@@ -63,13 +81,9 @@ public class DepositElement {
 				}
 			}
 			
-		} else if (formElement instanceof FileBlock) {
-			
-			fields.add(new FileDepositField());
+			depositEntry.setFields(fields);
 			
 		}
-		
-		depositEntry.setFields(fields);
 
 		entries.add(depositEntry);
 		
