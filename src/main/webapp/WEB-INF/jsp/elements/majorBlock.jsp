@@ -13,6 +13,7 @@
 					<form:option value="${majorRow.index}">${majorEntry.name}</form:option>
 				</c:forEach>
 			</form:select>
+			<br/>
 		</div>
 	</div>
 </div>

@@ -228,48 +228,54 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	</c:forEach>
 	
 	<c:if test="${not deposit.form.hasFileBlocks}">
-		<br/><h3>File for Deposit</h3>
-		<div class="indented_block">
-			<div class="form_field file_field ${not empty deposit.mainFile ? "filled" : ""}">
-				<label>&nbsp;</label>
-				<input name="mainFile" type="file" class="file" size="40"/>
-				<c:if test="${not empty deposit.mainFile}">
-					<span class="description">
-						<b><c:out value="${deposit.mainFile.filename}"/></b>
-						<input type="submit" name="_mainFile" value="Remove file" class="remove"/>
-					</span>
-				</c:if>
-				<span class="red">*</span>
-				<form:errors cssClass="red" path="mainFile" />
+		<div class="file_block">
+			<br/><h3>File for Deposit</h3>
+			<div class="indented_block">
+				<div class="form_field file_field ${not empty deposit.mainFile ? "filled" : ""}">
+					<label>&nbsp;</label>
+					<input name="mainFile" type="file" class="file" size="40"/>
+					<c:if test="${not empty deposit.mainFile}">
+						<span class="description">
+							<b><c:out value="${deposit.mainFile.filename}"/></b>
+							<input type="submit" name="_mainFile" value="Remove file" class="remove"/>
+						</span>
+					</c:if>
+					<span class="red">*</span>
+					<form:errors cssClass="red" path="mainFile" />
+				</div>
 			</div>
 		</div>
 	</c:if>
 
 	<c:if test="${deposit.form.canAddSupplementalFiles}">
-		<br/><h3>Supplemental Files</h3>
-		<div class="indented_block">
-			<c:forEach items="${deposit.supplementalFiles}" var="file" varStatus="fileRow">
-				<div class="form_field file_field ${not empty file ? "filled" : ""}">
-					<label>&nbsp;</label>
-					<input name="supplementalFiles[${fileRow.index}]" type="file" class="file" size="40"/>
-					<c:if test="${not empty file}">
-						<span class="description">
-							<b><c:out value="${file.filename}"/></b>
-							<input type="submit" name="_supplementalFiles[${fileRow.index}]" value="Remove file" class="remove"/>
-						</span>
-					</c:if>
-				</div>
-			</c:forEach>
+		<div class="file_block">
+			<br/><h3>Supplemental Files</h3>
+			<div class="indented_block">
+				<c:forEach items="${deposit.supplementalFiles}" var="file" varStatus="fileRow">
+					<div class="form_field file_field ${not empty file ? "filled" : ""}">
+						<label>&nbsp;</label>
+						<input name="supplementalFiles[${fileRow.index}]" type="file" class="file" size="40"/>
+						<c:if test="${not empty file}">
+							<span class="description">
+								<b><c:out value="${file.filename}"/></b>
+								<input type="submit" name="_supplementalFiles[${fileRow.index}]" value="Remove file" class="remove"/>
+							</span>
+						</c:if>
+					</div>
+				</c:forEach>
+			</div>
 		</div>
 	</c:if>
 	
-	<br/><h3>Email Address for Deposit Receipt</h3>
-	<p>Your deposit receipt will be emailed to the address below.</p>
-	<div class="indented_block">
-		<div class="form_field receipt_email_address_field">
-			<label>&nbsp;</label>
-    		<form:input path="receiptEmailAddress" />
-    		<form:errors cssClass="red" path="receiptEmailAddress" />
+	<div class="receipt_block">
+		<br/><h3>Email Address for Deposit Receipt</h3>
+		<p>Your deposit receipt will be emailed to the address below.</p>
+		<div class="indented_block">
+			<div class="form_field receipt_email_address_field">
+				<label>&nbsp;</label>
+	    		<form:input path="receiptEmailAddress" />
+	    		<form:errors cssClass="red" path="receiptEmailAddress" />
+			</div>
 		</div>
 	</div>
 	

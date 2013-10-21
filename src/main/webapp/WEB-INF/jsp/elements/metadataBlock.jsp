@@ -8,7 +8,7 @@
 <div class="metadata_block">
 
 	<c:if test="${not empty element.formElement.name}">
-		<h3><c:out value="${element.formElement.name}"/></h3>
+		<br/><h3><c:out value="${element.formElement.name}"/></h3>
 	</c:if>
 	<c:if test="${not empty element.formElement.description}">
 		<p><c:out value="${element.formElement.description}"/></p>

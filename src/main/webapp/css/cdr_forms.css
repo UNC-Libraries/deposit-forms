@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+
+/* page */
+
 body {
 	font-size: 16px;
 	color: #555555;
@@ -33,10 +36,6 @@ body {
 	
 }
 
-form {
-	float: none;
-}
-
 h2 {
 	 color: #335;
 	 font-weight: bold;
@@ -48,6 +47,7 @@ h3 {
 	padding-bottom: 1px;
 	font-size: 14px;
 	max-width: 750px;
+	margin-top: 10px;
 }
 
 p {
@@ -55,13 +55,65 @@ p {
 	margin-bottom: 0;
 }
 
-h3 {
-	margin-top: 10px;
+form {
+	float: none;
 }
 
 form h3 {
 	margin-top: 0px;
 }
+
+.form_logo {
+	display: block;
+	margin-bottom: 10px;
+}
+
+.hidden_top_submit {
+	width: 0px;
+	height: 0px;
+	margin: 0px;
+	padding: 0px;
+	outline: none;
+	border: 0px;
+	position: absolute;
+}
+
+
+/* blocks and block structure */
+
+#login_block {
+	text-align: center;
+	font-size: 15px;
+	padding-top: 8px;
+	font-weight: bold;
+}
+
+.metadata_block h3, .file_block h3, .receipt_block h3 {
+	margin-bottom: 13px;
+	border-bottom: 1px dotted #CCCCCC;
+}
+
+
+/* add/remove */
+
+.repeat_control {
+	float: left;
+	margin: 0 5px 0 0;
+	width: 30px !important;
+	height: 30px !important;
+}
+
+.form_field.contains_repeat_control label {
+	width: 165px;
+}
+
+.add_another_block label {
+	font-style: italic;
+	color: #777;
+}
+
+
+/* form fields */
 
 .form_field {
 	margin-top: 0.8em;
@@ -70,7 +122,7 @@ form h3 {
 .form_field label {
 	font-size: 15px;
 	float: left;
-	width: 12em;
+	width: 200px;
 	text-align: right; 
 	vertical-align: baseline; 
 	margin-right: 1em;
@@ -82,49 +134,8 @@ form h3 {
 	display: block;
 }
 
-.file_field input {
-	margin-right: 5px;
-}
-
 .red {
 	color: red;
-}
-
-.indented_block {
-	margin: 0em 2em;
-}
-
-.metadata_block {
-	margin-top: 1em;
-}
-
-.metadata_block:first-of-type {
-	margin-top: 0;
-}
-
-.metadata_block h3 {
-	margin-bottom: 13px;
-	border-bottom: 1px dotted #EEEEEE;
-}
-
-.file_block h3 {
-	margin-bottom: 13px;
-	border-bottom: 1px dotted #EEEEEE;
-}
-
-.entry_block {
-	border-bottom: 1px dotted #EEEEEE;
-	padding-bottom: 13px;
-}
-
-.indented_block .add {
-	margin-left: 195px;
-	margin-top: 13px;
-}
-
-.entry_block .remove {
-	margin-left: 195px;
-	margin-top: 13px;
 }
 
 .submit_container {
@@ -222,13 +233,11 @@ input[readonly] {
 	background-color: #fff;
 }
 
-.hidden_top_submit {
-	width: 0px;
-	height: 0px;
-	margin: 0px;
-	padding: 0px;
-	outline: none;
-	border: 0px;
+
+/* file fields */
+
+.file_field input {
+	margin-right: 5px;
 }
 
 .file_field.filled input.file {
@@ -241,50 +250,6 @@ input[readonly] {
 
 .file_field.removed .description {
 	display: none;
-}
-
-.form_logo {
-	display: block;
-	margin-bottom: 10px;
-}
-
-#login_block {
-	text-align: center;
-	font-size: 15px;
-	padding-top: 8px;
-	font-weight: bold;
-}
-
-
-.metadata_block h3 {
-	width: auto;
-	max-width: inherit;
-	border-bottom-color: #ccc;
-}
-	
-.entry_block {
-	border-bottom: 1px dotted #ddd;
-	padding-bottom: 13px;
-	padding-left: 32px;
-}
-
-.repeat_control {
-	float: left;
-	margin: 0;
-	width: auto !important;
-}
-
-.form_field.contains_repeat_control {
-	margin-left: -30px;
-}
-
-.add_another_block {
-	padding-left: 32px;
-}
-
-.add_another_block label {
-	font-style: italic;
-	color: #777;
 }
 
 
@@ -306,36 +271,40 @@ input[readonly] {
 }
 
 
-
 /* workarounds */
+
 * html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
 
 
 /* Menu
 ----------------------------------*/
 .ui-menu {
-		list-style:none;
-		padding: 2px;
-		margin: 0;
-		display:block;
+	list-style:none;
+	padding: 2px;
+	margin: 0;
+	display:block;
 }
+
 .ui-menu .ui-menu {
-		margin-top: -3px;
+	margin-top: -3px;
 }
+
 .ui-menu .ui-menu-item {
-		width: 100%;
-		margin: 0;
-		padding: 0;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 }
+
 .ui-menu .ui-menu-item a {
-		text-decoration:none;
-		display:block;
-		line-height:1.5;
-		zoom:1;
+	text-decoration:none;
+	display:block;
+	line-height:1.5;
+	zoom:1;
 }
+
 .ui-menu .ui-menu-item a.ui-state-hover,
 .ui-menu .ui-menu-item a.ui-state-active {
-		margin: -1px;
+	margin: -1px;
 }
 
 .ui-autocomplete ul {
@@ -343,6 +312,7 @@ input[readonly] {
 	margin: 15px 0 -4px;
 	padding: 4px;
 }
+
 .ui-autocomplete li {
 	color: #000000;
 	display: block;
@@ -352,6 +322,7 @@ input[readonly] {
 	text-decoration: none;
 	text-indent: 0;
 }
+
 .ui-autocomplete li a {
 	padding: 0.2em 0.4em;
 	padding-left: 1.7em;
