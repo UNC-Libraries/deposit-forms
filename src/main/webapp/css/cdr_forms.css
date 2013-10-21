@@ -88,9 +88,13 @@ form h3 {
 	font-weight: bold;
 }
 
-.metadata_block h3, .file_block h3, .receipt_block h3 {
+.metadata_block h3, .file_block h3, .receipt_block h3, .paragraph_block h3 {
 	margin-bottom: 13px;
 	border-bottom: 1px dotted #CCCCCC;
+}
+
+.paragraph_block.heading_only h3 {
+	border-bottom: none;
 }
 
 
