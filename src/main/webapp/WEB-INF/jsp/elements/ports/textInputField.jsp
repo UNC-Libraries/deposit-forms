@@ -6,7 +6,7 @@
 <div class="form_field width_${port.width.name} ${entryRow.index != 0 && portRow.index == 0 ? "contains_repeat_control" : ""}">
 
 	<c:if test="${entryRow.index != 0 && portRow.index == 0}">
-		<input type="image" src="images/minus.png" name="_elements[${elementRow.index}].entries[${entryRow.index}]" value="1" class="repeat_control"/>
+		<button name="_elements[${elementRow.index}].entries[${entryRow.index}]" value="1" class="remove"></button>
 	</c:if>
 
 	<label><c:if test="${not empty port.usage}"><a title="${port.usage}">(i)</a>&nbsp;</c:if><c:out value="${port.label}"/></label>

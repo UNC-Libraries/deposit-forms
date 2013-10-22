@@ -4,6 +4,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="crosswalk.*"%>
 <div class="form_field">
+
+	<c:if test="${entryRow.index != 0 && portRow.index == 0}">
+		<button name="_elements[${elementRow.index}].entries[${entryRow.index}]" value="1" class="remove"></button>
+	</c:if>
+	
 	<label><c:if test="${not empty port.usage}"><a title="${port.usage}">(i)</a>&nbsp;</c:if><c:out value="${port.label}"/></label>
 	<c:choose>
 		<c:when test="${port.datePrecision.name == 'month'}">

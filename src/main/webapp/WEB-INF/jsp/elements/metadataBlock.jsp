@@ -36,14 +36,22 @@
 	
 	</c:forEach>
 	
-	<c:if test="${fn:length(element.entries) < element.formElement.maxRepeat}">
+	<c:if test="${element.formElement.maxRepeat > 1}">
+	
 		<div class="add_another_block">
 			<div class="form_field width_Normal contains_repeat_control">
-				<input type="image" src="images/plus.png" class="repeat_control" name="elements[${elementRow.index}].append" value="1" />
-				<label for="elements[${elementRow.index}].append">Add Another <c:out value="${element.formElement.name}"/></label>
+				<c:choose>
+					<c:when test="${fn:length(element.entries) < element.formElement.maxRepeat}">
+						<button name="elements[${elementRow.index}].append" value="1" class="add">Add Another <c:out value="${element.formElement.name}"/></button>
+					</c:when>
+					<c:otherwise>
+						<button name="elements[${elementRow.index}].append" value="1" class="add" disabled="disabled">Add Another <c:out value="${element.formElement.name}"/></button>
+					</c:otherwise>
+				</c:choose>
 				<br/>
 			</div>
 		</div>
+	
 	</c:if>
 	
 </div>
