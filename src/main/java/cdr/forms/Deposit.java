@@ -29,8 +29,6 @@ public class Deposit {
 	private Form form;
 	private String formId;
 	private String receiptEmailAddress;
-	private DepositFile[] files;
-	private IdentityHashMap<FileBlock, Integer> blockFileIndexMap;
 	private DepositFile mainFile;
 	private DepositFile[] supplementalFiles;
 	private List<DepositElement> elements;
@@ -59,22 +57,6 @@ public class Deposit {
 		this.receiptEmailAddress = receiptEmailAddress;
 	}
 	
-	public DepositFile[] getFiles() {
-		return files;
-	}
-	
-	public void setFiles(DepositFile[] files) {
-		this.files = files;
-	}
-	
-	public IdentityHashMap<FileBlock, Integer> getBlockFileIndexMap() {
-		return blockFileIndexMap;
-	}
-	
-	public void setBlockFileIndexMap(IdentityHashMap<FileBlock, Integer> blockFileIndexMap) {
-		this.blockFileIndexMap = blockFileIndexMap;
-	}
-	
 	public DepositFile getMainFile() {
 		return mainFile;
 	}
@@ -101,10 +83,12 @@ public class Deposit {
 	public List<DepositFile> getAllFiles() {
 		List<DepositFile> files = new ArrayList<DepositFile>();
 		
-		if (this.getFiles() != null) {
-			for (DepositFile depositFile : this.getFiles()) {
-				if (depositFile != null)
-					files.add(depositFile);
+		if (this.getElements() != null) {
+			for (DepositElement element : this.getElements()) {
+				for (DepositEntry entry : element.getEntries()) {
+					if (entry.getFile() != null)
+						files.add(entry.getFile());
+				}
 			}
 		}
 		

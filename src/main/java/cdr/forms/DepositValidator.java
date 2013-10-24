@@ -59,16 +59,6 @@ public class DepositValidator implements Validator {
 			}
 		}
 		
-		// Validate presence of required files
-		
-		for (Entry<FileBlock, Integer> entry : deposit.getBlockFileIndexMap().entrySet()) {
-			FileBlock block = entry.getKey();
-			int index = entry.getValue().intValue();
-			
-			if (block.isRequired() && deposit.getFiles()[index] == null)
-				errors.rejectValue("files[" + index + "]", "file.required", "This file is required.");
-		}
-		
 		// The main file is required if there are no FileBlock elements
 		
 		if (!form.isHasFileBlocks()) {
@@ -83,28 +73,51 @@ public class DepositValidator implements Validator {
 		for (DepositElement element : deposit.getElements()) {
 			
 			if (element.getFormElement() instanceof MetadataBlock) {
-				MetadataBlock metadataBlock = (MetadataBlock) element.getFormElement();
-				int fieldIndex = 0;
+
+				int entryIndex = 0;
 				
-				for (InputField<?> inputField : metadataBlock.getPorts()) {
+				MetadataBlock metadataBlock = (MetadataBlock) element.getFormElement();
+
+				for (DepositEntry entry : element.getEntries()) {
 					
-					if (inputField.isRequired()) {
-						int entryIndex = 0;
-						
-						for (DepositEntry entry : element.getEntries()) {
-							if (entry != null) {
-								String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + fieldIndex + "].value";
-								ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
-							}
-							entryIndex++;
+					int portIndex = 0;
+					
+					for (InputField<?> inputField : metadataBlock.getPorts()) {
+					
+						if (inputField.isRequired()) {
+							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
+							ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
 						}
+						
+						portIndex++;
+						
 					}
 					
-					fieldIndex++;
+					entryIndex++;
+					
 				}
+				
 			}
 			
+			if (element.getFormElement() instanceof FileBlock) {
+
+				int entryIndex = 0;
+				
+				FileBlock fileBlock = (FileBlock) element.getFormElement();
+
+				for (DepositEntry entry : element.getEntries()) {
+					
+					if (fileBlock.isRequired() && entry.getFile() == null)
+						errors.rejectValue("elements[" + elementIndex + "].entries[" + entryIndex + "].file", "file.required", "This file is required.");
+					
+					entryIndex++;
+				
+				}
+				
+			}
+
 			elementIndex++;
+			
 		}
 		
 	}

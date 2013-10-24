@@ -63,6 +63,8 @@ public class DepositElement {
 		
 		DepositEntry depositEntry = new DepositEntry();
 		
+		depositEntry.setFormElement(formElement);
+		
 		if (formElement instanceof MetadataBlock) {
 			
 			List<DepositField<?>> fields = new ArrayList<DepositField<?>>();

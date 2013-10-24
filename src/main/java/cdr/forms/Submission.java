@@ -31,6 +31,8 @@ import gov.loc.mods.mods.MODSFactory;
 import gov.loc.mods.mods.NameDefinition;
 import gov.loc.mods.mods.XsString;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xml.type.internal.XMLCalendar;
 
 import crosswalk.DateInputField;
@@ -51,6 +54,7 @@ import crosswalk.MajorBlock;
 import crosswalk.MajorEntry;
 import crosswalk.MetadataBlock;
 import crosswalk.OutputElement;
+import crosswalk.OutputMetadataSections;
 import crosswalk.OutputProfile;
 import crosswalk.TextInputField;
 
@@ -90,24 +94,15 @@ public class Submission {
 		gov.loc.mets.DocumentRoot root;
 		MetsType mets;
 		AmdSecType amdSec;
-		MdSecType dmdSec;
-		DivType aggregateWorkDiv = null;
+		
 		
 		Form form = deposit.getForm();
-		
-		IdentityHashMap<DepositFile, FileBlock> fileBlockMap = new IdentityHashMap<DepositFile, FileBlock>();
-
-		for (Entry<FileBlock, Integer> entry : deposit.getBlockFileIndexMap().entrySet()) {
-			DepositFile depositFile = deposit.getFiles()[entry.getValue()];
-
-			if (depositFile != null)
-				fileBlockMap.put(depositFile, entry.getKey());
-		}
 
 		List<DepositFile> files = deposit.getAllFiles();
 		
 		DepositFile mainFile = deposit.getMainFile();
 
+		
 		// Document root
 
 		{
@@ -120,6 +115,7 @@ public class Submission {
 
 		}
 
+		
 		// Header
 
 		{
@@ -147,100 +143,9 @@ public class Submission {
 
 			mets.setMetsHdr(head);
 
-		}
-
-		// Metadata sections
-
-		dmdSec = null;
-		amdSec = MetsFactory.eINSTANCE.createAmdSecType();
-
-		{
-
-			int i = 0;
-
-			for (OutputProfile profile : form.getOutputProfiles()) {
-				MdSecType mdSec = makeMetadata(profile, deposit);
-				
-				if (mdSec != null) {
-					mdSec.setID("md_" + i);
-
-					switch (profile.getMetadataSection()) {
-						case DIGIPROV_MD:
-							amdSec.getDigiprovMD().add(mdSec);
-							break;
-						case RIGHTS_MD:
-							amdSec.getRightsMD().add(mdSec);
-							break;
-						case SOURCE_MD:
-							amdSec.getSourceMD().add(mdSec);
-							break;
-						case TECH_MD:
-							amdSec.getTechMD().add(mdSec);
-							break;
-						case DMD_SEC:
-							dmdSec = mdSec;
-							mets.getDmdSec().add(mdSec);
-							break;
-					}
-
-					i++;
-				}
-			}
-
-			mets.getAmdSec().add(amdSec);
-
-		}
-
+		}		
 		
-		AccessControlType accessControl = null;
-		// If the form specifies that the object should be reviewed before publication,
-		// the ACL should specify that it is not published.
-
-		// Set publication status 
-		if (form.isReviewBeforePublication()) {
-			accessControl = getRightsMD(amdSec);
-			accessControl.setPublished(false);
-		}
 		
-		// Set major related metadata if a MajorBlock is present, both description and rights 
-		MajorBlock majorBlock = null;
-		for (FormElement fe : form.getElements()) {
-			if (fe instanceof MajorBlock) {
-				majorBlock = (MajorBlock) fe;
-				break;
-			}
-		}
-		if (majorBlock != null) {
-			MajorEntry major = majorBlock.getSelectedMajor();
-			// Create the affiliation
-			EObject generatedFeature = majorBlock.getNameElement().getGeneratedFeature();
-			if (generatedFeature != null && generatedFeature instanceof NameDefinition) {
-				NameDefinition nameDef = (NameDefinition) generatedFeature;
-				XsString affiliation = MODSFactory.eINSTANCE.createXsString();
-				affiliation.setValue(major.getName());
-				nameDef.getAffiliation().add(affiliation);
-			}
-			// Create access control restrictions from the major
-			if (accessControl != null)
-				accessControl = getRightsMD(amdSec);
-			for (String group: major.getObserverGroups()) {
-				if (group != null && group.length() > 0) {
-					GrantType grantType = AclFactory.eINSTANCE.createGrantType();
-					grantType.setGroup(group);
-					grantType.setRole("acl:observer");
-					accessControl.getGrant().add(grantType);
-				}
-			}
-			for (String group: major.getReviewerGroups()) {
-				if (group != null && group.length() > 0) {
-					GrantType grantType = AclFactory.eINSTANCE.createGrantType();
-					grantType.setGroup(group);
-					grantType.setRole("acl:processor");
-					accessControl.getGrant().add(grantType);
-				}
-			}
-		}
-
 		// Files section
 
 		IdentityHashMap<DepositFile, FileType> filesFiles = new IdentityHashMap<DepositFile, FileType>();
@@ -253,7 +158,6 @@ public class Submission {
 			int i = 0;
 
 			for (DepositFile depositFile : files) {
-
 				FileType file = MetsFactory.eINSTANCE.createFileType();
 				file.setID("f_" + i);
 				file.setMIMETYPE(depositFile.getContentType());
@@ -268,189 +172,407 @@ public class Submission {
 				filesFiles.put(depositFile, file);
 
 				i++;
-
 			}
 
 			fileSec.getFileGrp().add(fileGrp);
 			mets.setFileSec(fileSec);
 
 		}
-
-		// Structural map
-
-		IdentityHashMap<DepositFile, DivType> fileDivs = new IdentityHashMap<DepositFile, DivType>();
+		
+		
+		// structMap section
+		
 		DivType rootDiv;
-
+		IdentityHashMap<DivType, DepositEntry> fileDivsEntries = new IdentityHashMap<DivType, DepositEntry>();
+		
 		if (mainFile != null && files.size() == 1) {
 
 			StructMapType structMap = MetsFactory.eINSTANCE.createStructMapType();
-
-			DivType fileDiv = MetsFactory.eINSTANCE.createDivType();
-
-			fileDiv.setTYPE(METSConstants.Div_File);
-			fileDiv.setID("d_0");
-			fileDiv.setLABEL1(mainFile.getFilename());
-
-			FptrType fptr = MetsFactory.eINSTANCE.createFptrType();
-			fptr.setFILEID(filesFiles.get(mainFile).getID());
-			fileDiv.getFptr().add(fptr);
-
-			structMap.setDiv(fileDiv);
+			
+			rootDiv = makeDivForFile(filesFiles.get(mainFile));
+			rootDiv.setID("d_0");
+			rootDiv.setLABEL1(mainFile.getFilename());
+			
 			mets.getStructMap().add(structMap);
-
-			fileDivs.put(mainFile, fileDiv);
-			rootDiv = fileDiv;
-
+			structMap.setDiv(rootDiv);
+			
 		} else {
-
+			
 			StructMapType structMap = MetsFactory.eINSTANCE.createStructMapType();
-
-			aggregateWorkDiv = MetsFactory.eINSTANCE.createDivType();
-			aggregateWorkDiv.setTYPE(METSConstants.Div_AggregateWork);
-			aggregateWorkDiv.setID("d_0");
-
-			int i = 1;
-
-			for (DepositFile depositFile : files) {
-
-				DivType fileDiv = MetsFactory.eINSTANCE.createDivType();
-				fileDiv.setTYPE(METSConstants.Div_File);
-
-				FileBlock fileBlock = fileBlockMap.get(depositFile);
-				if (fileBlock != null && fileBlock.getLabel() != null && fileBlock.getLabel().trim().length() > 0)
-					fileDiv.setLABEL1(fileBlock.getLabel());
-				else
-					fileDiv.setLABEL1(depositFile.getFilename());
-
-				FptrType fptr = MetsFactory.eINSTANCE.createFptrType();
-				fptr.setFILEID(filesFiles.get(depositFile).getID());
-				fileDiv.getFptr().add(fptr);
-				fileDiv.setID("d_" + i);
-
-				aggregateWorkDiv.getDiv().add(fileDiv);
-
-				fileDivs.put(depositFile, fileDiv);
-
-				i++;
-
-			}
-
-			structMap.setDiv(aggregateWorkDiv);
+			
+			rootDiv = MetsFactory.eINSTANCE.createDivType();
+			rootDiv.setTYPE(METSConstants.Div_AggregateWork);
+			rootDiv.setID("d_0");
+			
+			structMap.setDiv(rootDiv);
 			mets.getStructMap().add(structMap);
+			
+			int i = 1;
+			
+			// Main file (if present)
+			
+			if (mainFile != null) {
+				DivType fileDiv = makeDivForFile(filesFiles.get(mainFile));
+				fileDiv.setID("d_" + i++);
+				fileDiv.setLABEL1(mainFile.getFilename());
+				
+				rootDiv.getDiv().add(fileDiv);
+			}
+			
+			// Deposit entries
+			
+			for (DepositElement element : deposit.getElements()) {
+				if (element.getFormElement() instanceof FileBlock) {
+					
+					FileBlock fileBlock = (FileBlock) element.getFormElement();
+					
+					String label = null;
+					
+					if (fileBlock != null && fileBlock.getLabel() != null && fileBlock.getLabel().trim().length() > 0)
+						label = fileBlock.getLabel().trim();
 
-			rootDiv = aggregateWorkDiv;
+					for (DepositEntry entry : element.getEntries()) {
+						
+						if (entry.getFile() != null) {
+							DivType fileDiv = makeDivForFile(filesFiles.get(entry.getFile()));
+							fileDiv.setID("d_" + i++);
+							fileDiv.setLABEL1(label != null ? label : entry.getFile().getFilename());
+							
+							rootDiv.getDiv().add(fileDiv);
+							fileDivsEntries.put(fileDiv, entry);
+						}
+						
+					}
+					
+				}
+			}
+			
+			// Supplemental files
+			
+			if (deposit.getSupplementalFiles() != null) {
+				
+				for (DepositFile depositFile : deposit.getSupplementalFiles()) {
+					
+					if (depositFile != null) {
+						DivType fileDiv = makeDivForFile(filesFiles.get(depositFile));
+						fileDiv.setID("d_" + i++);
+						fileDiv.setLABEL1(depositFile.getFilename());
 
+						rootDiv.getDiv().add(fileDiv);
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		
+		// Metadata (amdSec and dmdSec sections)
+		
+		IdentityHashMap<DivType, Map<OutputMetadataSections, EObject>> divsMetadata = new IdentityHashMap<DivType, Map<OutputMetadataSections, EObject>>();
+		
+		// Gather metadata for entries associated with FileBlocks
+		
+		for (Entry<DivType, DepositEntry> entry : fileDivsEntries.entrySet()) {
+			divsMetadata.put(entry.getKey(), makeMetadata(form.getOutputProfiles(), Collections.singletonList(entry.getValue())));
+		}
+		
+		// Metadata for the root div is gathered from all entries not associated with FileBlocks
+		
+		ArrayList<DepositEntry> rootEntries = new ArrayList<DepositEntry>();
+		
+		for (DepositElement element : deposit.getElements()) {
+			if (element.getFormElement() instanceof MetadataBlock && !(element.getFormElement() instanceof FileBlock)) {
+				rootEntries.addAll(element.getEntries());
+			}
+		}
+		
+		divsMetadata.put(rootDiv, makeMetadata(form.getOutputProfiles(), rootEntries));
+		
+		
+		// Special cases for metadata
+		
+		// Find the root div's access control metadata object, adding a new one if none is present
+		
+		AccessControlType rootAccessControl;
+		
+		{
+			
+			edu.unc.lib.schemas.acl.DocumentRoot documentRoot = (edu.unc.lib.schemas.acl.DocumentRoot) divsMetadata.get(rootDiv).get(OutputMetadataSections.RIGHTS_MD);
+			
+			if (documentRoot.eContents().isEmpty()) {
+				rootAccessControl = AclFactory.eINSTANCE.createAccessControlType();
+				documentRoot.setAccessControl(rootAccessControl);
+			} else {
+				rootAccessControl = (AccessControlType) documentRoot.eContents().get(0);
+			}
+			
+		}
+		
+		// Special case: set published="false" if the submission should be reviewed before publication
+		
+		if (form.isReviewBeforePublication()) {
+			
+			rootAccessControl.setPublished(false);
+			
 		}
 
-		// Add metadata
+		// Special case: set major-related metadata if a MajorBlock is present
+		
+		MajorBlock majorBlock = null;
 
-		if (dmdSec != null)
-			rootDiv.getDmdSec().add(dmdSec);
+		for (FormElement fe : form.getElements()) {
+			if (fe instanceof MajorBlock) {
+				majorBlock = (MajorBlock) fe;
+				break;
+			}
+		}
+		
+		if (majorBlock != null) {
+					
+			MajorEntry major = majorBlock.getSelectedMajor();
+			
+			EObject generatedFeature = majorBlock.getNameElement().getGeneratedFeature();
+			
+			if (generatedFeature != null && generatedFeature instanceof NameDefinition) {
+				NameDefinition nameDef = (NameDefinition) generatedFeature;
+				XsString affiliation = MODSFactory.eINSTANCE.createXsString();
+				affiliation.setValue(major.getName());
+				nameDef.getAffiliation().add(affiliation);
+			}
+			
+			// Create access control restrictions from the major
+			
+			for (String group : major.getObserverGroups()) {
+				if (group != null && group.trim().length() > 0) {
+					GrantType grantType = AclFactory.eINSTANCE.createGrantType();
+					grantType.setGroup(group);
+					grantType.setRole("acl:observer");
+					rootAccessControl.getGrant().add(grantType);
+				}
+			}
+			
+			for (String group : major.getReviewerGroups()) {
+				if (group != null && group.trim().length() > 0) {
+					GrantType grantType = AclFactory.eINSTANCE.createGrantType();
+					grantType.setGroup(group);
+					grantType.setRole("acl:processor");
+					rootAccessControl.getGrant().add(grantType);
+				}
+			}
+			
+		}
+		
+		// Special case: for all non-root divs associated with a file block that has any values for copyGrantsHavingRoles, copy grants
+		// from the root access control object to the access control object for that div having those roles.
+		
+		for (Entry<DivType, Map<OutputMetadataSections, EObject>> pair : divsMetadata.entrySet()) {
+			
+			DepositEntry entry = fileDivsEntries.get(pair.getKey());
+			
+			if (entry == null)
+				continue;
+			
+			FormElement element = entry.getFormElement();
+			
+			if (element == null || !(element instanceof FileBlock))
+				continue;
+			
+			FileBlock fileBlock = (FileBlock) element;
+			
+			if (fileBlock.getCopyGrantsHavingRoles() != null && fileBlock.getCopyGrantsHavingRoles().size() > 0) {
+				
+				AccessControlType accessControl;
+				
+				{
+					
+					edu.unc.lib.schemas.acl.DocumentRoot documentRoot = (edu.unc.lib.schemas.acl.DocumentRoot) divsMetadata.get(pair.getKey()).get(OutputMetadataSections.RIGHTS_MD);
+					
+					if (documentRoot.eContents().isEmpty()) {
+						accessControl = AclFactory.eINSTANCE.createAccessControlType();
+						documentRoot.setAccessControl(accessControl);
+					} else {
+						accessControl = (AccessControlType) documentRoot.eContents().get(0);
+					}
+					
+				}
+				
+				
+				for (String role : fileBlock.getCopyGrantsHavingRoles()) {
+					
+					for (GrantType grant : rootAccessControl.getGrant()) {
+						
+						if (grant.getRole().equals(role))
+							accessControl.getGrant().add(EcoreUtil.copy(grant));
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		
+		// Wrap, link, and add metadata
+		
+		{
 
-		rootDiv.getMdSec().addAll(amdSec.getDigiprovMD());
-		rootDiv.getMdSec().addAll(amdSec.getRightsMD());
-		rootDiv.getMdSec().addAll(amdSec.getSourceMD());
-		rootDiv.getMdSec().addAll(amdSec.getTechMD());
+			amdSec = MetsFactory.eINSTANCE.createAmdSecType();
+			mets.getAmdSec().add(amdSec);
+			
+			int i = 0;
 
-		// Structural Links
+			for (Entry<DivType, Map<OutputMetadataSections, EObject>> divMetadataPair : divsMetadata.entrySet()) {
+				
+				DivType div = divMetadataPair.getKey();
+				
+				for (OutputProfile profile : form.getOutputProfiles()) {
+					
+					EObject output = divMetadataPair.getValue().get(profile.getMetadataSection());
+					
+					if (output.eContents() == null || output.eContents().isEmpty())
+						continue;
 
-		// Add "default access" links from the Aggregate Work div to each File div
-		// if its corresponding FileBlock has "default access role" set, or
-		// if its corresponding DepositFile is the main file (if set).
+					if (!profile.isStartMappingAtChildren())
+						output = output.eContents().get(0);
+					
+					// Wrap metadata output
+					
+					MdWrapType mdWrap = MetsFactory.eINSTANCE.createMdWrapType();
 
-		if (aggregateWorkDiv != null) {
+					MDTYPEType mdType = MDTYPEType.get(profile.getMetadataType());
+					if (mdType == null) {
+						mdWrap.setMDTYPE(MDTYPEType.OTHER);
+						mdWrap.setOTHERMDTYPE(profile.getMetadataType());
+					} else {
+						mdWrap.setMDTYPE(mdType);
+					}
 
+					XmlDataType1 xml = MetsFactory.eINSTANCE.createXmlDataType1();
+					xml.getAny().add(profile.getParentMappedFeature(), output);
+					mdWrap.setXmlData(xml);
+
+					MdSecType mdSec = MetsFactory.eINSTANCE.createMdSecType();
+					mdSec.setMdWrap(mdWrap);
+					mdSec.setID("md_" + i);
+					
+					// Add to the METS object and link with div
+
+					switch (profile.getMetadataSection()) {
+						case DIGIPROV_MD:
+							amdSec.getDigiprovMD().add(mdSec);
+							div.getMdSec().add(mdSec);
+							break;
+						case RIGHTS_MD:
+							amdSec.getRightsMD().add(mdSec);
+							div.getMdSec().add(mdSec);
+							break;
+						case SOURCE_MD:
+							amdSec.getSourceMD().add(mdSec);
+							div.getMdSec().add(mdSec);
+							break;
+						case TECH_MD:
+							amdSec.getTechMD().add(mdSec);
+							div.getMdSec().add(mdSec);
+							break;
+						case DMD_SEC:
+							mets.getDmdSec().add(mdSec);
+							div.getDmdSec().add(mdSec);
+							break;
+					}
+
+					i++;
+					
+				}
+
+			}
+			
+		}
+		
+		
+		// structLink section
+		
+		if (rootDiv.getTYPE().equals(METSConstants.Div_AggregateWork)) {
+			
 			StructLinkType1 structLink = MetsFactory.eINSTANCE.createStructLinkType1();
+			
+			// The DepositEntry instances in this map should be guaranteed to have FileBlock instances for their formElement properties
+			// and non-null valid DepositFile instances for their file properties by construction above.
+			
+			for (Entry<DivType, DepositEntry> entry : fileDivsEntries.entrySet()) {
+				
+				FileBlock fileBlock = (FileBlock) entry.getValue().getFormElement();
+				DepositFile file = (DepositFile) entry.getValue().getFile();
+				
+				if (fileBlock.isDefaultAccess() || file == mainFile) {
 
-			for (DepositFile depositFile : files) {
-
-				FileBlock fileBlock = fileBlockMap.get(depositFile);
-
-				if ((fileBlock != null && fileBlock.isDefaultAccess()) || (depositFile == mainFile)) {
-
-					DivType fileDiv = fileDivs.get(depositFile);
-
+					DivType fileDiv = entry.getKey();
+					
 					SmLinkType smLink = MetsFactory.eINSTANCE.createSmLinkType();
 					smLink.setArcrole(Link.DEFAULTACCESS.uri);
-					smLink.setXlinkFrom(aggregateWorkDiv);
+					smLink.setXlinkFrom(rootDiv);
 					smLink.setXlinkTo(fileDiv);
 
 					structLink.getSmLink().add(smLink);
-
+					
 				}
-
+			
 			}
 
 			// Only add the structLink section if there are actually links
 
 			if (structLink.getSmLink().size() > 0)
 				mets.setStructLink(structLink);
-
+			
 		}
 
 		return root;
 		
 	}
 	
-	private static AccessControlType getRightsMD(AmdSecType amdSec) {
+	private static DivType makeDivForFile(FileType file) {
 		
-		AccessControlType accessControl = null;
+		DivType div = MetsFactory.eINSTANCE.createDivType();
+		div.setTYPE(METSConstants.Div_File);
 
-		for (MdSecType mdSec : amdSec.getRightsMD()) {
-
-			if (mdSec.getMdWrap() != null && mdSec.getMdWrap().getMDTYPE().equals(MDTYPEType.OTHER)
-					&& mdSec.getMdWrap().getOTHERMDTYPE().equals("ACL")) {
-				return (AccessControlType) mdSec.getMdWrap().getXmlData().getAny()
-						.list(AclPackage.eINSTANCE.getDocumentRoot_AccessControl()).get(0);
-			}
-
-		}
-
-		accessControl = AclFactory.eINSTANCE.createAccessControlType();
+		FptrType fptr = MetsFactory.eINSTANCE.createFptrType();
+		fptr.setFILEID(file.getID());
+		div.getFptr().add(fptr);
 		
-		MdSecType rightsMdSec = MetsFactory.eINSTANCE.createMdSecType();
-		rightsMdSec.setID("md_review");
-
-		MdWrapType mdWrap = MetsFactory.eINSTANCE.createMdWrapType();
-		mdWrap.setMDTYPE(MDTYPEType.OTHER);
-		mdWrap.setOTHERMDTYPE("ACL");
-
-		XmlDataType1 xmlData = MetsFactory.eINSTANCE.createXmlDataType1();
-		xmlData.getAny().add(AclPackage.eINSTANCE.getDocumentRoot_AccessControl(), accessControl);
-
-		mdWrap.setXmlData(xmlData);
-		rightsMdSec.setMdWrap(mdWrap);
-
-		amdSec.getRightsMD().add(rightsMdSec);
-		
-		return accessControl;
+		return div;
 		
 	}
 	
-	private static MdSecType makeMetadata(OutputProfile profile, Deposit deposit) {
+	private static Map<OutputMetadataSections, EObject> makeMetadata(List<OutputProfile> profiles, List<DepositEntry> entries) {
 		
-		EClass outputElementClass = null;
-
-		if (profile.isStartMappingAtChildren())
-			outputElementClass = profile.getParentMappedFeature().getEReferenceType();
-		else
-			outputElementClass = profile.getParentMappedFeature().getEContainingClass();
-
-		EObject outputElement = outputElementClass.getEPackage().getEFactoryInstance().create(outputElementClass);
+		IdentityHashMap<OutputMetadataSections, EObject> metadata = new IdentityHashMap<OutputMetadataSections, EObject>(); 
 		
-		for (DepositElement element : deposit.getElements()) {
+		for (OutputProfile profile : profiles) {
 			
-			if (element.getFormElement() instanceof MetadataBlock) {
+			EClass outputElementClass;
+
+			if (profile.isStartMappingAtChildren())
+				outputElementClass = profile.getParentMappedFeature().getEReferenceType();
+			else
+				outputElementClass = profile.getParentMappedFeature().getEContainingClass();
+
+			EObject outputElement = outputElementClass.getEPackage().getEFactoryInstance().create(outputElementClass);
+			
+			
+			for (DepositEntry entry : entries) {
 				
-				MetadataBlock metadataBlock = (MetadataBlock) element.getFormElement();
+				FormElement formElement = entry.getFormElement();
 				
-				// For each entry, "fill out" the metadata block's ports using the values from the entry's fields.
-				// FIXME: clone metadata block rather than reusing the same instance?
-				
-				for (DepositEntry entry : element.getEntries()) {
+				if (formElement instanceof MetadataBlock) {
+
+					MetadataBlock metadataBlock = (MetadataBlock) formElement;
 					
+					// For each entry, "fill out" the metadata block's ports using the values from the entry's fields.
+
 					int portIndex = 0;
-					
+	
 					for (InputField<?> inputField : metadataBlock.getPorts()) {
 						if (inputField instanceof DateInputField) {
 							((DateInputField) inputField).setEnteredValue((Date) entry.getFields().get(portIndex).getValue());
@@ -459,45 +581,24 @@ public class Submission {
 						} else {
 							throw new Error("Unknown input field type");
 						}
-						
+	
 						portIndex++;
 					}
-
+	
 					for (OutputElement oe : metadataBlock.getElements()) {
 						oe.updateRecord(outputElement);
 					}
 					
 				}
-				
+
 			}
 			
+			metadata.put(profile.getMetadataSection(), outputElement);
+			
 		}
-
-		if (outputElement.eContents() == null || outputElement.eContents().isEmpty())
-			return null;
-
-		if (!profile.isStartMappingAtChildren())
-			outputElement = outputElement.eContents().get(0);
-
-		MdWrapType mdWrap = MetsFactory.eINSTANCE.createMdWrapType();
-
-		MDTYPEType mdType = MDTYPEType.get(profile.getMetadataType());
-		if (mdType == null) {
-			mdWrap.setMDTYPE(MDTYPEType.OTHER);
-			mdWrap.setOTHERMDTYPE(profile.getMetadataType());
-		} else {
-			mdWrap.setMDTYPE(mdType);
-		}
-
-		XmlDataType1 xml = MetsFactory.eINSTANCE.createXmlDataType1();
-		xml.getAny().add(profile.getParentMappedFeature(), outputElement);
-		mdWrap.setXmlData(xml);
-
-		MdSecType mdSec = MetsFactory.eINSTANCE.createMdSecType();
-		mdSec.setMdWrap(mdWrap);
-
-		return mdSec;
-
+		
+		return metadata;
+		
 	}
 	
 	

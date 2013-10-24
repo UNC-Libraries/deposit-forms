@@ -13,6 +13,7 @@
 	<c:if test="${port.width.name == 'FullLine' && port.type.name != 'MultipleLines'}">
 		<br/>
 	</c:if>
+	
 	<c:choose>
 		<c:when test="${port.type.name == 'MultipleLines'}">
 			<div class="multi_notes">

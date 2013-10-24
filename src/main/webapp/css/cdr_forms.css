@@ -104,7 +104,7 @@ form h3 {
 	width: 165px;
 }
 
-.add {
+.form_field.contains_repeat_control button.add {
 	display: block;
 	color: #fff;
 	background: #090;
@@ -120,7 +120,7 @@ form h3 {
 	cursor: pointer;
 }
 
-.add:after {
+.form_field.contains_repeat_control button.add:after {
 	content: "";
 	display: block;
 	width: 18px;
@@ -132,20 +132,20 @@ form h3 {
 	left: 6px;
 }
 
-.add:hover {
+.form_field.contains_repeat_control button.add:hover {
 	background: #080;
 }
 
-.add:active {
+.form_field.contains_repeat_control button.add:active {
 	background: #070;
 }
 
-.add[disabled] {
+.form_field.contains_repeat_control button.add[disabled] {
 	background: #bbb;
 	cursor: default;
 }
 
-.remove {
+.form_field.contains_repeat_control button.remove {
 	display: block;
 	width: 30px;
 	height: 30px;
@@ -160,11 +160,11 @@ form h3 {
 	background: #444 url(/forms/images/x-white.png) center center no-repeat;
 }
 
-.remove:hover {
+.form_field.contains_repeat_control button.remove:hover {
 	background-color: #333;
 }
 
-.remove:active {
+.form_field.contains_repeat_control button.remove:active {
 	background-color: #222;
 }
 

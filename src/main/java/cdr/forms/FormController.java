@@ -166,7 +166,6 @@ public class FormController {
 		binder.registerCustomEditor(java.util.Date.class, new DateEditor());
 		binder.registerCustomEditor(java.lang.String.class, new StringCleanerTrimmerEditor(true));
 		binder.registerCustomEditor(DepositFile.class, new DepositFileEditor());
-		
 		binder.setBindEmptyMultipartFiles(false);
 	}
 	
@@ -221,20 +220,6 @@ public class FormController {
 		
 		//
 		
-		IdentityHashMap<FileBlock, Integer> blockFileIndexMap = new IdentityHashMap<FileBlock, Integer>();
-
-		int index = 0;
-		
-		for (FormElement element : form.getElements()) {
-			if (element instanceof FileBlock) {
-				blockFileIndexMap.put((FileBlock) element, new Integer(index));
-				index++;
-			}
-		}
-	    
-	    deposit.setFiles(new DepositFile[index]);
-	    deposit.setBlockFileIndexMap(blockFileIndexMap);
-	    
 	    deposit.setSupplementalFiles(new DepositFile[3]);
 	    
 	    //
