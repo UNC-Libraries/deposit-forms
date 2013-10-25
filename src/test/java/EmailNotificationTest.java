@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,9 +40,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import cdr.forms.CachedXMIFormFactory;
+import cdr.forms.DateDepositField;
+import cdr.forms.Deposit;
+import cdr.forms.DepositElement;
+import cdr.forms.DepositEntry;
+import cdr.forms.DepositField;
 import cdr.forms.DepositResult;
+import cdr.forms.Submission;
 import cdr.forms.DepositResult.Status;
+import cdr.forms.EmailDepositField;
 import cdr.forms.EmailNotificationHandler;
+import cdr.forms.TextDepositField;
 import crosswalk.DateInputField;
 import crosswalk.Form;
 import crosswalk.FormElement;
@@ -92,21 +101,27 @@ public class EmailNotificationTest {
 	@Test
 	public void testDepositNotification() {
 		setMailMock();
+		
 		Form form = this.formFactory.getForm("test");
-		fillForm(form);
+		Deposit deposit = buildDeposit(form);
+		Submission submission = Submission.create(deposit);
+		
 		DepositResult result = new DepositResult();
 		result.setAccessURL("http://example.org/the/deposit/url");
 		result.setStatus(Status.PENDING);
 		
-		emailNotificationHandler.notifyDeposit(form, result, "test@example.org", "test");
+		emailNotificationHandler.notifyDeposit(deposit, result);
 		verify(this.javaMailSender, times(2)).send(any(MimeMessage.class));
 	}
 	
 	@Test
 	public void testDepositError() {
 		setMailMock();
+		
 		Form form = this.formFactory.getForm("test");
-		fillForm(form);
+		Deposit deposit = buildDeposit(form);
+		Submission submission = Submission.create(deposit);
+		
 		DepositResult result = new DepositResult();
 		result.setAccessURL("http://example.org/the/deposit/url");
 		result.setStatus(Status.FAILED);
@@ -115,30 +130,52 @@ public class EmailNotificationTest {
 		exception.printStackTrace(new PrintWriter(sw));
 		result.setResponseBody(sw.toString());
 		
-		emailNotificationHandler.notifyError(form, result, "test@example.org", "test");
+		emailNotificationHandler.notifyError(deposit, result);
 		verify(this.javaMailSender, times(1)).send(any(MimeMessage.class));
 	}
 	
-	private void fillForm(Form form) {
+	private Deposit buildDeposit(Form form) {
+		
 		form.setCurrentUser("testuser");
-		for(FormElement el : form.getElements()) {
-			if(el instanceof MetadataBlock) {
-				MetadataBlock mb = (MetadataBlock)el;
-				for(InputField inf : mb.getPorts()) {
-					if(inf instanceof DateInputField) {
-						DateInputField dif = (DateInputField)inf;
-						dif.setEnteredValue(new Date());
-					} else if(inf instanceof TextInputField) {
-						TextInputField tif = (TextInputField)inf;
-						String val = "Test"+ tif.getLabel();
-						if(tif.getMaxCharacters() != null && val.length() > tif.getMaxCharacters()) {
-							val.subSequence(0, tif.getMaxCharacters());
-						}
-						tif.setEnteredValue(val);
+
+		Deposit deposit = new Deposit();
+		
+		deposit.setForm(form);
+		deposit.setFormId("test");
+		deposit.setElements(new ArrayList<DepositElement>());
+		deposit.setReceiptEmailAddress("receipt@email.address");
+		
+		for (FormElement element : form.getElements()) {
+			
+			DepositElement depositElement = new DepositElement();
+			depositElement.setFormElement(element);
+			depositElement.setEntries(new ArrayList<DepositEntry>());
+			depositElement.appendEntry();
+			
+			DepositEntry entry = depositElement.getEntries().get(0);
+			
+			if (entry.getFields() != null) {
+			
+				for (DepositField<?> field : entry.getFields()) {
+					
+					if (field instanceof DateDepositField) {
+						((DateDepositField) field).setValue(new Date());
+					} else if (field instanceof TextDepositField) {
+						((TextDepositField) field).setValue("Test");
+					} else if (field instanceof EmailDepositField) {
+						((EmailDepositField) field).setValue("email@deposit.field");
 					}
+					
 				}
+				
 			}
+			
+			deposit.getElements().add(depositElement);
+			
 		}
+		
+		return deposit;
+		
 	}
 
 }

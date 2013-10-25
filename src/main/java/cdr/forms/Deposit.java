@@ -16,13 +16,13 @@
 package cdr.forms;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import crosswalk.FileBlock;
+import crosswalk.EmailInputField;
 import crosswalk.Form;
+import crosswalk.FormElement;
+import crosswalk.MajorBlock;
+import crosswalk.MajorEntry;
 
 public class Deposit {
 	
@@ -55,6 +55,42 @@ public class Deposit {
 
 	public void setReceiptEmailAddress(String receiptEmailAddress) {
 		this.receiptEmailAddress = receiptEmailAddress;
+	}
+	
+	public List<String> getAllDepositNoticeToEmailAddresses() {
+		
+		ArrayList<String> addresses = new ArrayList<String>();
+		
+		if (this.getReceiptEmailAddress() != null)
+			addresses.add(this.getReceiptEmailAddress());
+		
+		if (this.getForm().getEmailDepositNoticeTo() != null)
+			addresses.addAll(this.getForm().getEmailDepositNoticeTo());
+		
+		for (FormElement element : this.getForm().getElements()) {
+			if (element instanceof MajorBlock) {
+				MajorEntry major = ((MajorBlock) element).getSelectedMajor();
+				
+				if (major != null && major.getEmailDepositNoticeTo() != null) {
+					addresses.addAll(major.getEmailDepositNoticeTo());
+				}
+			}
+		}
+		
+		for (DepositElement element : this.getElements()) {
+			for (DepositEntry entry : element.getEntries()) {
+				if (entry.getFields() != null) {
+					for (DepositField<?> field : entry.getFields()) {
+						if (field instanceof EmailDepositField && ((EmailInputField) field.getFormInputField()).isProvidesEmailDepositNoticeTo()) {
+							addresses.add((String) field.getValue());
+						}
+					}
+				}
+			}
+		}
+		
+		return addresses;
+		
 	}
 	
 	public DepositFile getMainFile() {

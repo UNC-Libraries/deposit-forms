@@ -25,6 +25,8 @@
 						<%@include file="ports/dateInputField.jsp" %>
 					<% } else if (pageContext.getAttribute("port") instanceof TextInputField) { %>
 						<%@include file="ports/textInputField.jsp" %>
+					<% } else if (pageContext.getAttribute("port") instanceof EmailInputField) { %>
+						<%@include file="ports/emailInputField.jsp" %>
 					<% } else { %>
 						<form:input path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
 					<% } %>

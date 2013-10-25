@@ -28,6 +28,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
+import crosswalk.EmailInputField;
 import crosswalk.FileBlock;
 import crosswalk.Form;
 import crosswalk.FormElement;
@@ -87,6 +88,17 @@ public class DepositValidator implements Validator {
 						if (inputField.isRequired()) {
 							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
 							ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
+						}
+						
+						if (inputField instanceof EmailInputField) {
+							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
+
+							try {
+								InternetAddress address = new InternetAddress((String) errors.getFieldValue(path));
+								address.validate();
+							} catch (AddressException e) {
+								errors.rejectValue(path, "invalidEmailAddress", "You must enter a valid email address.");
+							}
 						}
 						
 						portIndex++;

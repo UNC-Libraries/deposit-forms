@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import crosswalk.DateInputField;
+import crosswalk.EmailInputField;
 import crosswalk.FileBlock;
 import crosswalk.FormElement;
 import crosswalk.InputField;
@@ -73,10 +74,17 @@ public class DepositElement {
 				if (field instanceof DateInputField) {
 					DateDepositField depositField = new DateDepositField();
 					depositField.setValue(new Date());
+					depositField.setFormInputField(field);
 					fields.add(depositField);
 				} else if (field instanceof TextInputField) {
 					TextDepositField depositField = new TextDepositField();
 					depositField.setValue(new String());
+					depositField.setFormInputField(field);
+					fields.add(depositField);
+				} else if (field instanceof EmailInputField) {
+					EmailDepositField depositField = new EmailDepositField();
+					depositField.setValue(new String());
+					depositField.setFormInputField(field);
 					fields.add(depositField);
 				} else {
 					throw new Error("Unknown input field type");

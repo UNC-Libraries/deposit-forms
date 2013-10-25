@@ -46,6 +46,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xml.type.internal.XMLCalendar;
 
 import crosswalk.DateInputField;
+import crosswalk.EmailInputField;
 import crosswalk.FileBlock;
 import crosswalk.Form;
 import crosswalk.FormElement;
@@ -578,6 +579,8 @@ public class Submission {
 							((DateInputField) inputField).setEnteredValue((Date) entry.getFields().get(portIndex).getValue());
 						} else if (inputField instanceof TextInputField) {
 							((TextInputField) inputField).setEnteredValue((String) entry.getFields().get(portIndex).getValue());
+						} else if (inputField instanceof EmailInputField) {
+							((EmailInputField) inputField).setEnteredValue((String) entry.getFields().get(portIndex).getValue());
 						} else {
 							throw new Error("Unknown input field type");
 						}

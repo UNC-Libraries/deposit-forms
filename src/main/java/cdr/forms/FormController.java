@@ -346,7 +346,7 @@ public class FormController {
 				LOG.error("deposit failed");
 				
 				if (getNotificationHandler() != null)
-					getNotificationHandler().notifyError(deposit.getForm(), result, deposit.getReceiptEmailAddress(), formId);
+					getNotificationHandler().notifyError(deposit, result);
 				
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				
@@ -355,7 +355,7 @@ public class FormController {
 			} else {
 		
 				if (getNotificationHandler() != null)
-					getNotificationHandler().notifyDeposit(deposit.getForm(), result, deposit.getReceiptEmailAddress(), formId);
+					getNotificationHandler().notifyDeposit(deposit, result);
 				
 				view = "success";
 				

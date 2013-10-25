@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -129,8 +130,11 @@ public class EmailNotificationHandler implements NotificationHandler {
 	}
 
 	@Override
-	public void notifyDeposit(Form form, DepositResult result,
-			String depositorEmail, String formId) {
+	public void notifyDeposit(Deposit deposit, DepositResult result) {
+		
+		Form form = deposit.getForm();
+		String formId = deposit.getFormId();
+		
 		// put data into the model
 		HashMap<String, Object> model = new HashMap<String, Object>();
 		model.put("form", form);
@@ -140,13 +144,19 @@ public class EmailNotificationHandler implements NotificationHandler {
 		model.put("siteName", this.getSiteName());
 		model.put("receivedDate", new Date(System.currentTimeMillis()));
 		
-		sendReceipt(model, depositorEmail, form);
-		sendNotice(model, form);
+		sendReceipt(model, form, deposit.getReceiptEmailAddress());
+		sendNotice(model, form, deposit.getAllDepositNoticeToEmailAddresses());
+		
 	}
 	
 	@Override
-	public void notifyError(Form form, DepositResult result,
-			String depositorEmail, String formId) {
+	public void notifyError(Deposit deposit, DepositResult result) {
+		
+		Form form = deposit.getForm();
+		String formId = deposit.getFormId();
+		String depositorEmail = deposit.getReceiptEmailAddress();
+		List<String> recipients = deposit.getAllDepositNoticeToEmailAddresses();
+		
 		// put data into the model
 		HashMap<String, Object> model = new HashMap<String, Object>();
 		model.put("form", form);
@@ -174,16 +184,15 @@ public class EmailNotificationHandler implements NotificationHandler {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage,
 					MimeMessageHelper.MULTIPART_MODE_MIXED);
-			if(administratorAddress != null && administratorAddress.trim().length() > 0) {
+			
+			if (administratorAddress != null && administratorAddress.trim().length() > 0) {
 				message.addTo(this.administratorAddress);
 			}
-			List<String> emailDepositNoticeTo = form.getUnifiedEmailDepositNoticeTo();
-			if(emailDepositNoticeTo != null && !emailDepositNoticeTo.isEmpty()) {
-				for(String addy : emailDepositNoticeTo) {
-					message.addTo(addy);
-				}
+			
+			for (String recipient : recipients) {
+				message.addTo(recipient);
 			}
-			if(depositorEmail != null && depositorEmail.trim().length() > 0) message.addTo(depositorEmail);
+			
 			message.setSubject("Deposit Error for " + form.getTitle());
 			message.setFrom(this.getFromAddress());
 			message.setText(textsw.toString() , htmlsw.toString());
@@ -195,9 +204,11 @@ public class EmailNotificationHandler implements NotificationHandler {
 		
 	}
 	
-	private void sendReceipt(HashMap<String, Object> model, String email, Form form) {
+	
+	private void sendReceipt(HashMap<String, Object> model, Form form, String recipient) {
 		
-		if (email == null || email.trim().length() == 0) return;
+		if (recipient == null || recipient.trim().length() == 0)
+			return;
 		
 		StringWriter htmlsw = new StringWriter();
 		StringWriter textsw = new StringWriter();
@@ -216,7 +227,7 @@ public class EmailNotificationHandler implements NotificationHandler {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage,
 					MimeMessageHelper.MULTIPART_MODE_MIXED);
-			message.addTo(email);
+			message.addTo(recipient);
 			message.setSubject("Deposit Receipt for " + form.getTitle());
 			message.setFrom(this.getFromAddress());
 			message.setText(textsw.toString() , htmlsw.toString());
@@ -225,15 +236,17 @@ public class EmailNotificationHandler implements NotificationHandler {
 			LOG.error("problem sending deposit message", e);
 			return;
 		}
+		
 	}
 	
-	private void sendNotice(HashMap<String, Object> model, Form form) {
-		List<String> emailDepositNoticeTo = form.getUnifiedEmailDepositNoticeTo();
-		if (emailDepositNoticeTo == null || emailDepositNoticeTo.isEmpty())
+	private void sendNotice(HashMap<String, Object> model, Form form, List<String> recipients) {
+		
+		if (recipients == null || recipients.isEmpty())
 			return;
 		
 		StringWriter htmlsw = new StringWriter();
 		StringWriter textsw = new StringWriter();
+		
 		try {
 			depositNoticeHtmlTemplate.process(model, htmlsw);
 			depositNoticeTextTemplate.process(model, textsw);
@@ -249,10 +262,10 @@ public class EmailNotificationHandler implements NotificationHandler {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage,
 					MimeMessageHelper.MULTIPART_MODE_MIXED);
-			for(String addy : emailDepositNoticeTo) {
-				message.addTo(addy);
+			for (String recipient : recipients) {
+				message.addTo(recipient);
 			}
-			message.setSubject("Deposit to " + form.getTitle() + " by "+form.getCurrentUser());
+			message.setSubject("Deposit to " + form.getTitle() + " by " + form.getCurrentUser());
 			message.setFrom(this.getFromAddress());
 			message.setText(textsw.toString() , htmlsw.toString());
 			this.mailSender.send(mimeMessage);

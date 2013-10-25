@@ -2,7 +2,7 @@ package cdr.forms;
 
 import crosswalk.InputField;
 
-public class TextDepositField implements DepositField<String> {
+public class EmailDepositField implements DepositField<String> {
 
 	private String value;
 	private InputField<?> formInputField;
