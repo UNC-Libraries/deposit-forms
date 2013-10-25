@@ -137,6 +137,7 @@ public class EmailNotificationHandler implements NotificationHandler {
 		
 		// put data into the model
 		HashMap<String, Object> model = new HashMap<String, Object>();
+		model.put("deposit", deposit);
 		model.put("form", form);
 		model.put("formId", formId);
 		model.put("result", result);
@@ -159,6 +160,7 @@ public class EmailNotificationHandler implements NotificationHandler {
 		
 		// put data into the model
 		HashMap<String, Object> model = new HashMap<String, Object>();
+		model.put("deposit", deposit);
 		model.put("form", form);
 		model.put("formId", formId);
 		model.put("result", result);

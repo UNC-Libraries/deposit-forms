@@ -21,17 +21,19 @@ Please do not reply to this message.<#if form.contactEmail??> If you have any qu
 
 You entered the following information on ${form.title} at ${siteUrl}/forms/${formId}.form:
  * User: ${form.currentUser!""}
-  <#list form.elements as element>
-  	<#if element.ports??>
-    <#list element.ports as input>
-    	<#if input.class.name == "crosswalk.impl.DateInputFieldImpl">
- * ${input.label}: ${input.enteredValue?datetime!""}
-    	<#else>
- * ${input.label}: ${input.enteredValue!""}
-    	</#if>
+ <#list deposit.elements as element>
+  	<#list element.entries as entry>
+  		<#if entry.fields??>
+			<#list entry.fields as field>
+				<#if field.class.name == "cdr.forms.DateDepositField">
+ * ${field.formInputField.label}: ${field.value?datetime!""}
+				<#else>
+ * ${field.formInputField.label}: ${field.value!""}
+				</#if>
+			</#list>
+		</#if>
     </#list>
-    </#if>
-  </#list>
+ </#list>
 
 Thank you for contributing to the ${siteName}, a service of the University of North Carolina at Chapel Hill Libraries.
 

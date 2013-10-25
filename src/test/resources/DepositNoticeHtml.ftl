@@ -29,17 +29,19 @@
   <p>The following information was entered on <a href="${siteUrl}/forms/${formId}.form">${form.title}</a>:
   <ul>
     <li>User: ${form.currentUser!""}</li>
-  <#list form.elements as element>
-  	<#if element.ports??>
-    <#list element.ports as input>
-    	<#if input.class.name == "crosswalk.impl.DateInputFieldImpl">
-    <li>${input.label}: ${input.enteredValue?datetime!""}</li>
-    	<#else>
-    <li>${input.label}: ${input.enteredValue!""}</li>
-    	</#if>
+<#list deposit.elements as element>
+  	<#list element.entries as entry>
+  		<#if entry.fields??>
+			<#list entry.fields as field>
+				<#if field.class.name == "cdr.forms.DateDepositField">
+	<li>${field.formInputField.label}: ${field.value?datetime!""}</li>
+				<#else>
+	<li>${field.formInputField.label}: ${field.value!""}</li>
+				</#if>
+			</#list>
+		</#if>
     </#list>
-    </#if>
-  </#list>
+</#list>
   </ul></p>
   <p>Thank you for contributing to the <a href="${siteUrl}">${siteName}</a>, a service of the <a href="http://www.lib.unc.edu/">University of North Carolina at Chapel Hill Libraries</a>.</p>
 </body>

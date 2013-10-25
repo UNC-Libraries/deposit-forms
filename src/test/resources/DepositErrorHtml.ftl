@@ -28,21 +28,23 @@
   <pre>
 ${result.getResponseBody()!"no response body"}
   </pre>
-  <p>The following information was entered on <a href="${siteUrl}/forms/${formId}.form">${form.title}</a>:
+  <p>The following information was entered on <a href="${siteUrl}/forms/${formId}.form">${form.title}</a>:</p>
   <ul>
     <li>Depositor Username: ${form.currentUser!""}</li>
-    <li>Depositor Email: ${depositorEmail!"not available"}</li>
-  <#list form.elements as element>
-  	<#if element.ports??>
-    <#list element.ports as input>
-    	<#if input.class.name == "crosswalk.impl.DateInputFieldImpl">
-    <li>${input.label}: ${input.enteredValue?datetime!""}</li>
-    	<#else>
-    <li>${input.label}: ${input.enteredValue!""}</li>
-    	</#if>
+    <li>Depositor Email: ${depositorEmail!"not available"}</li> 
+<#list deposit.elements as element>
+  	<#list element.entries as entry>
+  		<#if entry.fields??>
+			<#list entry.fields as field>
+				<#if field.class.name == "cdr.forms.DateDepositField">
+	<li>${field.formInputField.label}: ${field.value?datetime!""}</li>
+				<#else>
+	<li>${field.formInputField.label}: ${field.value!""}</li>
+				</#if>
+			</#list>
+		</#if>
     </#list>
-    </#if>
-  </#list>
-  </ul></p>
+</#list>
+  </ul>
 </body>
 </html>

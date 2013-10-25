@@ -197,7 +197,13 @@
         <ports xsi:type="walk:DateInputField" label="Day Date" datePrecision="day"/>
         <ports xsi:type="walk:DateInputField" label="Month Date" datePrecision="month"/>
         <ports xsi:type="walk:DateInputField" label="Year Date"/>
+      </elements>
+      <elements xsi:type="walk:MetadataBlock" name="Email input test">
         <ports xsi:type="walk:EmailInputField" label="Email" providesEmailDepositNoticeTo="true"/>
+      </elements>
+      <elements xsi:type="walk:MetadataBlock" name="Repeating block test" maxRepeat="2">
+        <ports xsi:type="walk:TextInputField" label="first"/>
+        <ports xsi:type="walk:TextInputField" label="second"/>
       </elements>
       <elements xsi:type="walk:Paragraph" heading="Test Paragraph Header" text="This is the body text of a test paragraph. Paragraphs should be pretty standard and might wrap at a certain point when text goes too far in one direction. Four score and seven years agao. Our forefathers set out acrrosss..slajflakjsfdlkasdflalkfdsj."/>
       <elements xsi:type="walk:Paragraph" heading="hahaha"/>

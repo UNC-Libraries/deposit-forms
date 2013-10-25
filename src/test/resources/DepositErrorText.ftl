@@ -24,14 +24,16 @@ ${result.getResponseBody()!"no response body"}
 The following information was entered on ${siteUrl}/forms/${formId}.form
  * Depositor Username: ${form.currentUser!""}
  * Depositor Email: ${depositorEmail!"not available"}
-  <#list form.elements as element>
-  	<#if element.ports??>
-    <#list element.ports as input>
-    	<#if input.class.name == "crosswalk.impl.DateInputFieldImpl">
- * ${input.label}: ${input.enteredValue?datetime!""}
-    	<#else>
- * ${input.label}: ${input.enteredValue!""}
-    	</#if>
+ <#list deposit.elements as element>
+  	<#list element.entries as entry>
+  		<#if entry.fields??>
+			<#list entry.fields as field>
+				<#if field.class.name == "cdr.forms.DateDepositField">
+ * ${field.formInputField.label}: ${field.value?datetime!""}
+				<#else>
+ * ${field.formInputField.label}: ${field.value!""}
+				</#if>
+			</#list>
+		</#if>
     </#list>
-    </#if>
-  </#list>
+ </#list>

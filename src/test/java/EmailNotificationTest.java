@@ -150,20 +150,27 @@ public class EmailNotificationTest {
 			DepositElement depositElement = new DepositElement();
 			depositElement.setFormElement(element);
 			depositElement.setEntries(new ArrayList<DepositEntry>());
+			
 			depositElement.appendEntry();
 			
-			DepositEntry entry = depositElement.getEntries().get(0);
+			if (element instanceof MetadataBlock && ((MetadataBlock) element).getMaxRepeat() > 1) {
+				depositElement.appendEntry();
+			}
 			
-			if (entry.getFields() != null) {
-			
-				for (DepositField<?> field : entry.getFields()) {
-					
-					if (field instanceof DateDepositField) {
-						((DateDepositField) field).setValue(new Date());
-					} else if (field instanceof TextDepositField) {
-						((TextDepositField) field).setValue("Test");
-					} else if (field instanceof EmailDepositField) {
-						((EmailDepositField) field).setValue("email@deposit.field");
+			for (DepositEntry entry : depositElement.getEntries()) {
+				
+				if (entry.getFields() != null) {
+				
+					for (DepositField<?> field : entry.getFields()) {
+						
+						if (field instanceof DateDepositField) {
+							((DateDepositField) field).setValue(new Date());
+						} else if (field instanceof TextDepositField) {
+							((TextDepositField) field).setValue("Test");
+						} else if (field instanceof EmailDepositField) {
+							((EmailDepositField) field).setValue("email@deposit.field");
+						}
+						
 					}
 					
 				}
