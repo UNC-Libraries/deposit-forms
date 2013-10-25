@@ -46,7 +46,6 @@ h3 {
 	color: #444444;
 	padding-bottom: 1px;
 	font-size: 14px;
-	max-width: 750px;
 	margin-top: 10px;
 }
 
@@ -90,7 +89,7 @@ form h3 {
 
 .metadata_block h3, .file_block h3, .receipt_block h3, .paragraph_block h3 {
 	margin-bottom: 13px;
-	border-bottom: 1px dotted #CCCCCC;
+	border-bottom: 1px dotted #bbb;
 }
 
 .paragraph_block.heading_only h3 {
@@ -99,6 +98,11 @@ form h3 {
 
 
 /* add/remove */
+
+.form_field.contains_repeat_control {
+	border-top: 1px dotted #ddd;
+	padding-top: 13px;
+}
 
 .form_field.contains_repeat_control label {
 	width: 165px;
