@@ -73,7 +73,7 @@ public class DepositElement {
 			for (InputField<?> field : ((MetadataBlock) formElement).getPorts()) {
 				if (field instanceof DateInputField) {
 					DateDepositField depositField = new DateDepositField();
-					depositField.setValue(new Date());
+					depositField.setValue(null);
 					depositField.setFormInputField(field);
 					fields.add(depositField);
 				} else if (field instanceof TextInputField) {
