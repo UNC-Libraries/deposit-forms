@@ -33,6 +33,7 @@ import crosswalk.FileBlock;
 import crosswalk.Form;
 import crosswalk.FormElement;
 import crosswalk.InputField;
+import crosswalk.MajorBlock;
 import crosswalk.MetadataBlock;
 
 public class DepositValidator implements Validator {
@@ -124,6 +125,16 @@ public class DepositValidator implements Validator {
 					
 					entryIndex++;
 				
+				}
+				
+			}
+			
+			if (element.getFormElement() instanceof MajorBlock) {
+				
+				MajorBlock majorBlock = (MajorBlock) element.getFormElement();
+
+				if (majorBlock.getSelectedMajor() == null) {
+					errors.rejectValue("elements[" + elementIndex + "]", "major.required", "You must select a major.");
 				}
 				
 			}
