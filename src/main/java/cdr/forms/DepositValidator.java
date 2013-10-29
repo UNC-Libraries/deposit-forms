@@ -85,11 +85,6 @@ public class DepositValidator implements Validator {
 					int portIndex = 0;
 					
 					for (InputField<?> inputField : metadataBlock.getPorts()) {
-					
-						if (inputField.isRequired()) {
-							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
-							ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
-						}
 						
 						if (inputField instanceof EmailInputField) {
 							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
@@ -100,6 +95,9 @@ public class DepositValidator implements Validator {
 							} catch (AddressException e) {
 								errors.rejectValue(path, "invalidEmailAddress", "You must enter a valid email address.");
 							}
+						} else if (inputField.isRequired()) {
+							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
+							ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
 						}
 						
 						portIndex++;
@@ -134,7 +132,7 @@ public class DepositValidator implements Validator {
 				MajorBlock majorBlock = (MajorBlock) element.getFormElement();
 
 				if (majorBlock.getSelectedMajor() == null) {
-					errors.rejectValue("elements[" + elementIndex + "]", "major.required", "You must select a major.");
+					errors.rejectValue("elements[" + elementIndex + "]", "field.required", "This field is required.");
 				}
 				
 			}
