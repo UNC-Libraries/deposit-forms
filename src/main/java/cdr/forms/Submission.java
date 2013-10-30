@@ -2,7 +2,6 @@ package cdr.forms;
 
 import edu.unc.lib.schemas.acl.AccessControlType;
 import edu.unc.lib.schemas.acl.AclFactory;
-import edu.unc.lib.schemas.acl.AclPackage;
 import edu.unc.lib.schemas.acl.GrantType;
 import gov.loc.mets.AgentType;
 import gov.loc.mets.AmdSecType;
@@ -37,7 +36,6 @@ import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.EClass;
@@ -94,13 +92,24 @@ public class Submission {
 
 		gov.loc.mets.DocumentRoot root;
 		MetsType mets;
-		AmdSecType amdSec;
 		
+		// Mapping between files in the deposit and mets:file elements
+		IdentityHashMap<DepositFile, FileType> filesFiles;
+		
+		// Reference to the root mets:div element
+		DivType rootDiv;
+		
+		// Mapping between mets:div elements and deposit entries
+		IdentityHashMap<DivType, DepositEntry> fileDivsEntries;
+		
+		// Mapping from mets:div elements to metadata
+		IdentityHashMap<DivType, Map<OutputMetadataSections, EObject>> divsMetadata;
+		
+		
+		// Grab file basics from the deposit: the form, a list of all files, and the main file (if present)
 		
 		Form form = deposit.getForm();
-
 		List<DepositFile> files = deposit.getAllFiles();
-		
 		DepositFile mainFile = deposit.getMainFile();
 
 		
@@ -149,7 +158,7 @@ public class Submission {
 		
 		// Files section
 
-		IdentityHashMap<DepositFile, FileType> filesFiles = new IdentityHashMap<DepositFile, FileType>();
+		filesFiles = new IdentityHashMap<DepositFile, FileType>();
 
 		{
 
@@ -183,8 +192,7 @@ public class Submission {
 		
 		// structMap section
 		
-		DivType rootDiv;
-		IdentityHashMap<DivType, DepositEntry> fileDivsEntries = new IdentityHashMap<DivType, DepositEntry>();
+		fileDivsEntries = new IdentityHashMap<DivType, DepositEntry>();
 		
 		if (mainFile != null && files.size() == 1) {
 
@@ -271,7 +279,7 @@ public class Submission {
 		
 		// Metadata (amdSec and dmdSec sections)
 		
-		IdentityHashMap<DivType, Map<OutputMetadataSections, EObject>> divsMetadata = new IdentityHashMap<DivType, Map<OutputMetadataSections, EObject>>();
+		divsMetadata = new IdentityHashMap<DivType, Map<OutputMetadataSections, EObject>>();
 		
 		// Gather metadata for entries associated with FileBlocks
 		
@@ -281,15 +289,19 @@ public class Submission {
 		
 		// Metadata for the root div is gathered from all entries not associated with FileBlocks
 		
-		ArrayList<DepositEntry> rootEntries = new ArrayList<DepositEntry>();
+		{
 		
-		for (DepositElement element : deposit.getElements()) {
-			if (element.getFormElement() instanceof MetadataBlock && !(element.getFormElement() instanceof FileBlock)) {
-				rootEntries.addAll(element.getEntries());
+			ArrayList<DepositEntry> rootEntries = new ArrayList<DepositEntry>();
+			
+			for (DepositElement element : deposit.getElements()) {
+				if (element.getFormElement() instanceof MetadataBlock && !(element.getFormElement() instanceof FileBlock)) {
+					rootEntries.addAll(element.getEntries());
+				}
 			}
-		}
+			
+			divsMetadata.put(rootDiv, makeMetadata(form.getOutputProfiles(), rootEntries));
 		
-		divsMetadata.put(rootDiv, makeMetadata(form.getOutputProfiles(), rootEntries));
+		}
 		
 		
 		// Special cases for metadata
@@ -420,7 +432,7 @@ public class Submission {
 		
 		{
 
-			amdSec = MetsFactory.eINSTANCE.createAmdSecType();
+			AmdSecType amdSec = MetsFactory.eINSTANCE.createAmdSecType();
 			mets.getAmdSec().add(amdSec);
 			
 			int i = 0;
