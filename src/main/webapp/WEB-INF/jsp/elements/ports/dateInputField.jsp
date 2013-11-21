@@ -12,10 +12,10 @@
 	<label><c:if test="${not empty port.usage}"><a title="${port.usage}">(i)</a>&nbsp;</c:if><c:out value="${port.label}"/></label>
 	<c:choose>
 		<c:when test="${port.datePrecision.name == 'month'}">
-			<form:input cssClass="monthpicker" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
+			<form:input cssClass="monthpicker ${port.blankDefaultDate == true ? 'blankDefault' : ''}" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
 		</c:when>
 		<c:when test="${port.datePrecision.name == 'day'}">
-			<form:input cssClass="datepicker" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
+			<form:input cssClass="datepicker ${port.blankDefaultDate == true ? 'blankDefault' : ''}" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
 		</c:when>
 		<c:when test="${port.datePrecision.name == 'year'}">
 			<%-- Display a select of years, from 190 in the past to 10 in the future --%>

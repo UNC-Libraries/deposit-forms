@@ -113,7 +113,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 		}).focus(function () {
 			$(".ui-datepicker-calendar").hide();
 		}).attr("readonly", true).each(function(){
-			if (!$(this).val()) {
+			if (!$(this).val() && !$(this).hasClass("blankDefault")) {
 				$(this).datepicker("setDate", new Date());
 			}
 		});
@@ -130,7 +130,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 			$(".ui-datepicker-calendar").show();
 			$(".ui-datepicker-month").show();
 		}).each(function(){
-			if (!$(this).val()) {
+			if (!$(this).val() && !$(this).hasClass("blankDefault")) {
 				$(this).datepicker("setDate", new Date());
 			}
 		});
