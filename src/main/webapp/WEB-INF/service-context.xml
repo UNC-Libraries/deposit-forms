@@ -59,10 +59,6 @@
 	<bean id="formFactory" class="cdr.forms.CachedXMIFormFactory">
 		<property name="formPath" value="${forms.dir}" />
 	</bean>
-	
-	<bean id="administratorEmail" class="java.lang.String">
-		<constructor-arg value="${administrator.email}"/>
-	</bean>
 
 	<bean id="depositHandler" class="cdr.forms.SwordDepositHandler">
 		<property name="serviceUrl"
