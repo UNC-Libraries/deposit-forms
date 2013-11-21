@@ -21,14 +21,27 @@
 			<%-- Display a select of years, from 190 in the past to 10 in the future --%>
 			<form:select path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}">
 				<%-- Select the year from the form bean or the current year if none is provided --%>
+				<%-- If the port has the blankDefaultDate attribute set, present a blank option and select that if we have no value --%>
 				<c:choose>
 					<c:when test="${deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value != null}">
 						<c:set var="selectedIndex" value="${currentYear + 10 - (deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value.year + 1900)}"/>
 					</c:when>
 					<c:otherwise>
-						<c:set var="selectedIndex" value="${10}"/>
+						<c:set var="selectedIndex" value="${port.blankDefaultDate ? -1 : 10}"/>
 					</c:otherwise>
 				</c:choose>
+				
+				<c:if test="${port.blankDefaultDate}">
+					<c:choose>
+						<c:when test="${selectedIndex == -1}">
+							<form:option value="" selected="true"/>
+						</c:when>
+						<c:otherwise>
+							<form:option value=""/>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+				
 				<c:forEach var="i" begin="0" end="200">
 					<c:choose>
 						<c:when test="${i == selectedIndex}">
