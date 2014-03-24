@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="crosswalk.*"%>
+<c:set var="isFileBlock" value="false"/>
 
 <div class="metadata_block">
 

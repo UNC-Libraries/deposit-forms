@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="crosswalk.*"%>
+<c:set var="isFileBlock" value="true"/>
 
 <div class="file_block">
 
@@ -17,7 +18,11 @@
 		
 		<div class="entry_block">
 		
-			<div class="form_field file_field ${not empty entry.file ? "filled" : ""}">
+			<div class="form_field file_field ${entryRow.index != 0 ? "contains_repeat_control" : ""} ${not empty entry.file ? "filled" : ""}">
+      	<c:if test="${entryRow.index != 0}">
+      		<button name="_elements[${elementRow.index}].entries[${entryRow.index}]" value="1" class="removeEntry"></button>
+      	</c:if>
+        
 				<label><c:if test="${not empty element.formElement.usage}"><a title="${element.formElement.usage}">(i)</a></c:if>&nbsp;</label>
 				
 				<input name="elements[${elementRow.index}].entries[${entryRow.index}].file" type="file" class="file" size="40"/>

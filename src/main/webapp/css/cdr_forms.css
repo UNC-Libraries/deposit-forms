@@ -149,7 +149,7 @@ form h3 {
 	cursor: default;
 }
 
-.form_field.contains_repeat_control button.remove {
+.form_field.contains_repeat_control button.removeEntry {
 	display: block;
 	width: 30px;
 	height: 30px;
