@@ -79,7 +79,7 @@ import crosswalk.FormElement;
 @SessionAttributes("deposit")
 public class FormController {
 	
-	private static final String SUPPLEMENTAL_OBJECTS_FORM_ID = "studio-art";
+	private static final String SUPPLEMENTAL_OBJECTS_FORM_ID = "art-mfa";
 	
 	@Autowired
 	ClamScan clamScan = null;
