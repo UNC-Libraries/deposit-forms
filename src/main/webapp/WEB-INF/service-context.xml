@@ -68,8 +68,7 @@
 		<property name="defaultContainer" value="${forms.default.container.pid}"/>
 		
 		<property name="externalPath" value="${forms.external.dir}" />
- 		<property name="externalScheme" value="${forms.external.scheme}" />
- 		<property name="externalAuthority" value="${forms.external.authority}" />
+ 		<property name="externalUriBase" value="${forms.external.uriBase}" />
 	</bean>
 	
 	<bean id="authorizationHandler" class="cdr.forms.RequestHeaderAuthorizationHandler">

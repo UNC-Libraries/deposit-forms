@@ -117,8 +117,7 @@ public class SwordDepositHandler implements DepositHandler, ExternalDepositFileC
 	private String username;
 	private String password;
 	private String externalPath;
-	private String externalScheme;
-	private String externalAuthority;
+	private String externalUriBase;
 
 	public String getServiceUrl() {
 		return serviceUrl;
@@ -167,20 +166,12 @@ public class SwordDepositHandler implements DepositHandler, ExternalDepositFileC
 		this.externalPath = externalPath;
 	}
 
-	public String getExternalScheme() {
-		return externalScheme;
+	public String getExternalUriBase() {
+		return externalUriBase;
 	}
 
-	public void setExternalScheme(String externalScheme) {
-		this.externalScheme = externalScheme;
-	}
-
-	public String getExternalAuthority() {
-		return externalAuthority;
-	}
-
-	public void setExternalAuthority(String externalAuthority) {
-		this.externalAuthority = externalAuthority;
+	public void setExternalUriBase(String externalUriBase) {
+		this.externalUriBase = externalUriBase;
 	}
 
 	public DepositResult deposit(Deposit deposit) {

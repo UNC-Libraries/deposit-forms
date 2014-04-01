@@ -112,23 +112,27 @@ public class Submission {
 		for (DepositFile file : files) {
 			
 			if (file.isExternal()) {
+				
 				String path = file.getFile().getAbsolutePath();
 
 				if (path.startsWith(externalDepositFileConfigurationProvider.getExternalPath()))
 					path = path.substring(externalDepositFileConfigurationProvider.getExternalPath().length());
 				else
 					throw new Error("External file's path doesn't start with configured external directory path.");
+				
+				// Ensure the path always starts with a slash
+				
+				if (!path.startsWith("/")) {
+					path = "/" + path;
+				}
 
 				try {
-					java.net.URI uri = new java.net.URI(
-							externalDepositFileConfigurationProvider.getExternalScheme(),
-							externalDepositFileConfigurationProvider.getExternalAuthority(),
-							path,
-							null);
+					java.net.URI uri = new java.net.URI(externalDepositFileConfigurationProvider.getExternalUriBase() + path);
 					filenames.put(file, uri.toString());
 				} catch (URISyntaxException e) {
 					throw new Error(e);
 				}
+				
 			} else {
 			
 				filenames.put(file, "data_" + index + file.getExtension());
