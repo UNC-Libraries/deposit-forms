@@ -262,22 +262,10 @@ if (multipleFileSupport)
 
 <div id="pagewrap">
 	<div id="pagewrap_inside">
-		<div class="darkest shadowbottom" id="header">
-			<div class="threecol dark shadowbottom">
-				<div class="contentarea">
-					<h1>Carolina Digital Repository</h1>
-					<a href="/" id="titlelink"><img src="/static/images/carolinadigitalrepository.png"></a>
-
-
-				</div>
-			</div>
-			<div class="fourcol darkest">
-				<div class="contentarea">
-				</div>
-			</div>
-		</div>
+		<%@ include file="header.html"%>
 		<div id="content">
-			<div class="contentarea">
+			<div class="content-wrap">
+				<div class="contentarea">
 
 <c:if test="${not empty deposit.form.logo}">
 <img src="${deposit.form.logo}" class="form_logo"/>
@@ -379,25 +367,9 @@ if (multipleFileSupport)
 	</div>
 
 </form:form>
-
 </div>
 </div>
-<div id="footer" class="darkest">
-	<div class="threecol dark">
-		<div class="contentarea">
-			<p>
-				<a href="/">Home</a>&nbsp;|&nbsp;
-				<a href="/search?types=Collection">Browse Collections</a>&nbsp;|&nbsp;
-				<a href="/external?page=about.about">About</a>&nbsp;|&nbsp;
-				<a href="/external?page=contact&amp;refer=https%3a%2f%2fcdr.lib.unc.edu%2f">Contact Us</a>&nbsp;|&nbsp;
-				<a href="http://www.lib.unc.edu">Library Home</a>&nbsp;|&nbsp;
-				<a href="http://www.lib.unc.edu/aoffice/policies/privacy_policy.html">Privacy Policy</a>
-			</p>
-		</div>
-	</div>
-	<div class="fourcol darkest">
-		<div class="contentarea"><p class="left"><a href="http://www.unc.edu">UNC Home </a></p><a href="http://www.unc.edu"><img src="/static/images/uncwell.png" id="footer_uncwell"></a></div>
-	</div>
+<%@ include file="footer.html"%>
 </div>
 </div>
 </div>
