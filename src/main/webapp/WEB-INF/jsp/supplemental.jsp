@@ -26,7 +26,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="/static/css/reset.css" />
 <link type="text/css" href="css/jquery-ui.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="/static/css/cdrui_styles.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/cdr_access.css" />
 <link rel="stylesheet" type="text/css" href="css/jquery.qtip.min.css" />
 <link rel="stylesheet" type="text/css" href="css/cdr_forms.css" />
 
