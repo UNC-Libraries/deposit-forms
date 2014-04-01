@@ -282,10 +282,10 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	<div class="submit_container">
 		<c:choose>
 			<c:when test="${hasSupplementalObjectsStep}">
-				<input type="submit" value="Next Step" />
+				<input type="submit" name="deposit" value="Next Step" />
 			</c:when>
 			<c:otherwise>
-				<input type="submit" value="Submit Deposit" />
+				<input type="submit" name="deposit" value="Submit Deposit" />
 			</c:otherwise>
 		</c:choose>
 	</div>
