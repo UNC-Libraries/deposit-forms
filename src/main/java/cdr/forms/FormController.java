@@ -58,6 +58,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,7 +78,9 @@ import crosswalk.FormElement;
 @RequestMapping(value = { "/*", "/**" })
 @SessionAttributes("deposit")
 public class FormController {
-
+	
+	private static final String SUPPLEMENTAL_OBJECTS_FORM_ID = "studio-art";
+	
 	@Autowired
 	ClamScan clamScan = null;
 	
@@ -192,6 +195,8 @@ public class FormController {
 	@RequestMapping(value = "/{formId}.form", method = RequestMethod.GET)
 	public String showForm(@PathVariable String formId, Model model, HttpServletRequest request) throws PermissionDeniedException {
 		
+		request.setAttribute("hasSupplementalObjectsStep", formId.equals(SUPPLEMENTAL_OBJECTS_FORM_ID));
+		
 		Form form = factory.getForm(formId);
 		
 		if (form == null)
@@ -257,6 +262,8 @@ public class FormController {
 			@RequestParam(value="deposit", required=false) String submitDepositAction,
 			HttpServletRequest request,
 			HttpServletResponse response) throws PermissionDeniedException {
+		
+		request.setAttribute("hasSupplementalObjectsStep", formId.equals(SUPPLEMENTAL_OBJECTS_FORM_ID));
 		
 		// Check that the form submitted by the user matches the one in the session
 		
@@ -342,6 +349,14 @@ public class FormController {
 			view = "virus";
 			
 		} else {
+			
+			// Redirect for supplemental objects special case
+			
+			if (formId.equals(SUPPLEMENTAL_OBJECTS_FORM_ID)) {
+				return "redirect:/supplemental";
+			}
+			
+			// We're doing a regular deposit, so call the deposit handler
 		
 			DepositResult result = this.getDepositHandler().deposit(deposit);
 		
@@ -377,6 +392,182 @@ public class FormController {
 
 		return view;
 		
+	}
+	
+	@RequestMapping(value = "/supplemental", method = { RequestMethod.POST, RequestMethod.GET })
+	public String collectSupplementalObjects(
+			@Valid @ModelAttribute("deposit") Deposit deposit,
+			BindingResult errors,
+			SessionStatus sessionStatus,
+			@RequestParam(value="added", required=false) DepositFile[] addedDepositFiles,
+			@RequestParam(value="deposit", required=false) String submitDepositAction,
+			HttpServletRequest request,
+			HttpServletResponse response) {
+
+		request.setAttribute("formattedMaxUploadSize", (getMaxUploadSize()/1000000) + "MB");
+		request.setAttribute("maxUploadSize", getMaxUploadSize());
+
+
+		// Validate request and ensure character encoding is set
+
+		this.getAuthorizationHandler().checkPermission(deposit.getFormId(), deposit.getForm(), request);
+
+		try {
+			request.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			LOG.error("Failed to set character encoding", e);
+		}
+
+
+		// Update supplemental objects
+
+		Iterator<SupplementalObject> iterator = deposit.getSupplementalObjects().iterator();
+
+		while (iterator.hasNext()) {
+			SupplementalObject file = iterator.next();
+			if (file == null)
+				iterator.remove();
+		}
+
+		if (addedDepositFiles != null) {
+			for (DepositFile depositFile : addedDepositFiles) {
+				if (depositFile != null) {
+					
+					depositFile.setExternal(true);
+
+					SupplementalObject object = new SupplementalObject();
+					object.setDepositFile(depositFile);
+
+					deposit.getSupplementalObjects().add(object);
+					
+				}
+			}
+		}
+
+		Collections.sort(deposit.getSupplementalObjects(), new Comparator<SupplementalObject>() {
+			public int compare(SupplementalObject sf1, SupplementalObject sf2) {
+		        return sf1.getDepositFile().getFilename().compareTo(sf2.getDepositFile().getFilename());
+			}
+		});
+
+
+		// Check the deposit's files for virus signatures
+
+		IdentityHashMap<DepositFile, String> signatures = new IdentityHashMap<DepositFile, String>();
+		
+		for (DepositFile depositFile : deposit.getAllFiles())
+			scanDepositFile(depositFile, signatures);
+
+
+		// Validate supplemental objects
+
+		if (submitDepositAction != null) {
+			
+			Validator validator = new SupplementalObjectValidator();
+
+			int i = 0;
+
+			for (SupplementalObject object : deposit.getSupplementalObjects()) {
+				errors.pushNestedPath("supplementalObjects[" + i + "]");
+				validator.validate(object, errors);
+				errors.popNestedPath();
+
+				i++;
+			}
+			
+		}
+
+
+		// Handle viruses, validation errors, and the deposit not having been finally submitted
+
+		request.setAttribute("formId", deposit.getFormId());
+		request.setAttribute("administratorEmail", getAdministratorEmail());
+
+		if (signatures.size() > 0) {
+			request.setAttribute("signatures", signatures);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+			deposit.deleteAllFiles(true);
+			sessionStatus.setComplete();
+
+			return "virus";
+		}
+
+		if (errors.hasErrors()) {
+			return "supplemental";
+		}
+
+		if (submitDepositAction == null) {
+			return "supplemental";
+		}
+
+
+		// Try to deposit
+
+		DepositResult result = this.getDepositHandler().deposit(deposit);
+
+		if (result.getStatus() == Status.FAILED) {
+
+			LOG.error("deposit failed");
+
+			if (getNotificationHandler() != null) {
+				getNotificationHandler().notifyError(deposit, result);
+			}
+
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+			deposit.deleteAllFiles(true);
+			sessionStatus.setComplete();
+
+			return "failed";
+
+		} else {
+
+			if (getNotificationHandler() != null) {
+				getNotificationHandler().notifyDeposit(deposit, result);
+			}
+
+			deposit.deleteAllFiles(false);
+			sessionStatus.setComplete();
+
+			return "success";
+
+		}
+
+	}
+
+	@RequestMapping(value = "/supplemental/files", method = RequestMethod.POST)
+	@ResponseBody
+	public void addSupplementalObject(
+			@Valid @ModelAttribute("deposit") Deposit deposit,
+			BindingResult errors,
+			@RequestParam(value="file") DepositFile depositFile) {
+
+		if (depositFile != null) {
+			
+			depositFile.setExternal(true);
+
+			SupplementalObject object = new SupplementalObject();
+			object.setDepositFile(depositFile);
+
+			deposit.getSupplementalObjects().add(object);
+
+			Collections.sort(deposit.getSupplementalObjects(), new Comparator<SupplementalObject>() {
+				public int compare(SupplementalObject sf1, SupplementalObject sf2) {
+			        return sf1.getDepositFile().getFilename().compareTo(sf2.getDepositFile().getFilename());
+				}
+			});
+			
+		}
+
+	}
+
+	@RequestMapping(value = "/supplemental/ping", method = RequestMethod.GET)
+	@ResponseBody
+	public String ping(@ModelAttribute("deposit") Deposit deposit, BindingResult errors) {
+
+		return "pong";
+
 	}
 	
 	private void scanDepositFile(DepositFile depositFile, IdentityHashMap<DepositFile, String> signatures) {
