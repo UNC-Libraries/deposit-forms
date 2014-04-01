@@ -109,7 +109,7 @@ import crosswalk.TextInputField;
 
 import cdr.forms.DepositResult.Status;
 
-public class SwordDepositHandler implements DepositHandler {
+public class SwordDepositHandler implements DepositHandler, ExternalDepositFileConfigurationProvider {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SwordDepositHandler.class);
 
@@ -187,7 +187,7 @@ public class SwordDepositHandler implements DepositHandler {
 		
 		// Prepare the submission package
 		
-		Submission submission = Submission.create(deposit);
+		Submission submission = Submission.create(deposit, this);
 		
 		File zipFile = makeZipFile(submission.getMetsDocumentRoot(), submission.getFiles());
 
@@ -375,19 +375,23 @@ public class SwordDepositHandler implements DepositHandler {
 			// Write files
 			
 			for (DepositFile file : filenames.keySet()) {
+				
+				if (!file.isExternal()) {
 
-				entry = new ZipEntry(filenames.get(file));
-				zipOutput.putNextEntry(entry);
-
-				FileInputStream fileInput = new FileInputStream(file.getFile());
-
-				byte[] buffer = new byte[1024];
-				int length;
-
-				while ((length = fileInput.read(buffer)) != -1)
-					zipOutput.write(buffer, 0, length);
-
-				fileInput.close();
+					entry = new ZipEntry(filenames.get(file));
+					zipOutput.putNextEntry(entry);
+	
+					FileInputStream fileInput = new FileInputStream(file.getFile());
+	
+					byte[] buffer = new byte[1024];
+					int length;
+	
+					while ((length = fileInput.read(buffer)) != -1)
+						zipOutput.write(buffer, 0, length);
+	
+					fileInput.close();
+					
+				}
 
 			}
 

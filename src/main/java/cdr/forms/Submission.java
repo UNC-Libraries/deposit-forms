@@ -30,6 +30,9 @@ import gov.loc.mods.mods.MODSFactory;
 import gov.loc.mods.mods.NameDefinition;
 import gov.loc.mods.mods.XsString;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -62,25 +65,76 @@ public class Submission {
 	IdentityHashMap<DepositFile, String> files;
 	gov.loc.mets.DocumentRoot metsDocumentRoot;
 	
-	public static Submission create(Deposit deposit) {
+	public static Submission create(Deposit deposit, ExternalDepositFileConfigurationProvider externalDepositFileConfigurationProvider) {
 		
 		Submission submission = new Submission();
 
-		submission.files = buildFilenameMap(deposit.getAllFiles());
+		moveExternalFiles(deposit.getAllFiles(), externalDepositFileConfigurationProvider);
+		
+		submission.files = buildFilenameMap(deposit.getAllFiles(), externalDepositFileConfigurationProvider);
 		submission.metsDocumentRoot = buildMets(deposit, submission.files);
 		
 		return submission;
 		
 	}
 	
-	private static IdentityHashMap<DepositFile, String> buildFilenameMap(List<DepositFile> files) {
+	private static void moveExternalFiles(List<DepositFile> files, ExternalDepositFileConfigurationProvider externalDepositFileConfigurationProvider) {
+		
+		for (DepositFile depositFile : files) {
+
+			if (depositFile.isExternal()) {
+
+				try {
+					File temp = File.createTempFile("data", depositFile.getExtension(), new File(externalDepositFileConfigurationProvider.getExternalPath()));
+
+					if (depositFile.getFile().renameTo(temp))
+						depositFile.setFile(temp);
+					else
+						throw new Error("Couldn't move external file to external files directory.");
+				} catch (IOException e) {
+					throw new Error(e);
+				}
+
+			}
+
+		}
+		
+	}
+	
+	private static IdentityHashMap<DepositFile, String> buildFilenameMap(
+			List<DepositFile> files,
+			ExternalDepositFileConfigurationProvider externalDepositFileConfigurationProvider) {
 
 		IdentityHashMap<DepositFile, String> filenames = new IdentityHashMap<DepositFile, String>();
 
 		int index = 0;
 
 		for (DepositFile file : files) {
-			filenames.put(file, "data_" + index + file.getExtension());
+			
+			if (file.isExternal()) {
+				String path = file.getFile().getAbsolutePath();
+
+				if (path.startsWith(externalDepositFileConfigurationProvider.getExternalPath()))
+					path = path.substring(externalDepositFileConfigurationProvider.getExternalPath().length());
+				else
+					throw new Error("External file's path doesn't start with configured external directory path.");
+
+				try {
+					java.net.URI uri = new java.net.URI(
+							externalDepositFileConfigurationProvider.getExternalScheme(),
+							externalDepositFileConfigurationProvider.getExternalAuthority(),
+							path,
+							null);
+					filenames.put(file, uri.toString());
+				} catch (URISyntaxException e) {
+					throw new Error(e);
+				}
+			} else {
+			
+				filenames.put(file, "data_" + index + file.getExtension());
+			
+			}
+			
 			index++;
 		}
 
@@ -303,6 +357,28 @@ public class Submission {
 		
 		}
 		
+		// Special case: Add divs and metadata for supplemental objects
+		
+		{
+			
+			int i = 0;
+		
+			for (SupplementalObject object : deposit.getSupplementalObjects()) {
+				
+				DivType fileDiv = makeDivForFile(filesFiles.get(object.getDepositFile()));
+				fileDiv.setID("s_" + i++);
+				fileDiv.setLABEL1(object.getDepositFile().getFilename());
+				
+				rootDiv.getDiv().add(fileDiv);
+				
+				IdentityHashMap<OutputMetadataSections, EObject> metadata = new IdentityHashMap<OutputMetadataSections, EObject>();
+				metadata.put(OutputMetadataSections.DMD_SEC, object.getDescriptiveMetadata());
+				divsMetadata.put(fileDiv, metadata);
+				
+			}
+		
+		}
+		
 		
 		// Special cases for metadata
 		
@@ -445,7 +521,7 @@ public class Submission {
 					
 					EObject output = divMetadataPair.getValue().get(profile.getMetadataSection());
 					
-					if (output.eContents() == null || output.eContents().isEmpty())
+					if (output == null || output.eContents() == null || output.eContents().isEmpty())
 						continue;
 
 					if (!profile.isStartMappingAtChildren())

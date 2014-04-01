@@ -77,19 +77,9 @@ public class SupplementalObject {
 		this.narrative = narrative;
 	}
 
-	public MdSecType getDescriptiveMetadata() {
-
-		MdSecType mdSec = MetsFactory.eINSTANCE.createMdSecType();
-
-		MdWrapType mdWrap = MetsFactory.eINSTANCE.createMdWrapType();
-		mdWrap.setMDTYPE(MDTYPEType.MODS);
-		mdSec.setMdWrap(mdWrap);
-
-		XmlDataType1 xmlData = MetsFactory.eINSTANCE.createXmlDataType1();
-		mdWrap.setXmlData(xmlData);
+	public ModsDefinition getDescriptiveMetadata() {
 
 		ModsDefinition modsDefinition = MODSFactory.eINSTANCE.createModsDefinition();
-		xmlData.getAny().add(MODSPackage.eINSTANCE.getDocumentRoot_Mods(), modsDefinition);
 
 		// Title
 
@@ -134,7 +124,7 @@ public class SupplementalObject {
 
 		}
 
-		return mdSec;
+		return modsDefinition;
 
 	}
 
