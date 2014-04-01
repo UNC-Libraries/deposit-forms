@@ -224,6 +224,10 @@ public class FormController {
 	    
 	    //
 	    
+	    deposit.setSupplementalObjects(new ArrayList<SupplementalObject>());
+	    
+	    //
+	    
 	    String receiptEmailAddress = null;
 		
 		if (request.getHeader("mail") != null) {

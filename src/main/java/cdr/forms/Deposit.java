@@ -32,6 +32,7 @@ public class Deposit {
 	private DepositFile mainFile;
 	private DepositFile[] supplementalFiles;
 	private List<DepositElement> elements;
+	private List<SupplementalObject> supplementalObjects;
 
 	public Form getForm() {
 		return form;
@@ -110,9 +111,15 @@ public class Deposit {
 	}
 	
 	public void deleteAllFiles() {
+		deleteAllFiles(false);
+	}
+	
+	public void deleteAllFiles(boolean deleteExternal) {
 		for (DepositFile depositFile : this.getAllFiles()) {
-			if (depositFile.getFile() != null)
-				depositFile.getFile().delete();
+			if (depositFile.getFile() != null) {
+				if (deleteExternal || !depositFile.isExternal())
+					depositFile.getFile().delete();
+			}
 		}
 	}
 	
@@ -138,6 +145,13 @@ public class Deposit {
 			}
 		}
 		
+		if (this.getSupplementalObjects() != null) {
+			for (SupplementalObject object : this.getSupplementalObjects()) {
+				if (object != null && object.getDepositFile() != null)
+					files.add(object.getDepositFile());
+			}
+		}
+		
 		return files;
 	}
 
@@ -147,6 +161,14 @@ public class Deposit {
 
 	public void setElements(List<DepositElement> elements) {
 		this.elements = elements;
+	}
+	
+	public List<SupplementalObject> getSupplementalObjects() {
+		return supplementalObjects;
+	}
+
+	public void setSupplementalObjects(List<SupplementalObject> supplementalObjects) {
+		this.supplementalObjects = supplementalObjects;
 	}
 
 }

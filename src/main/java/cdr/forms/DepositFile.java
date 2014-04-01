@@ -24,6 +24,7 @@ public class DepositFile {
 	private String filename;
 	private String contentType;
 	private long size;
+	private boolean external;
 	
 	public File getFile() {
 		return file;
@@ -65,6 +66,14 @@ public class DepositFile {
 		if (!Pattern.matches("^\\.[a-zA-Z0-9]+$", extension))
 			extension = "";
 		return extension;
+	}
+	
+	public boolean isExternal() {
+		return external;
+	}
+
+	public void setExternal(boolean external) {
+		this.external = external;
 	}
 	
 }
