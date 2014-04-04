@@ -231,14 +231,17 @@ public class Submission {
 				FileType file = MetsFactory.eINSTANCE.createFileType();
 				file.setID("f_" + i);
 				file.setMIMETYPE(depositFile.getContentType());
-				file.setCHECKSUMTYPE(CHECKSUMTYPEType.MD5);
 				
-				try {
-					file.setCHECKSUM(depositFile.getHexDigest("MD5"));
-				} catch (IOException e) {
-					throw new Error(e);
-				} catch (NoSuchAlgorithmException e) {
-					throw new Error(e);
+				if (depositFile.isExternal()) {
+					file.setCHECKSUMTYPE(CHECKSUMTYPEType.MD5);
+					
+					try {
+						file.setCHECKSUM(depositFile.getHexDigest("MD5"));
+					} catch (IOException e) {
+						throw new Error(e);
+					} catch (NoSuchAlgorithmException e) {
+						throw new Error(e);
+					}
 				}
 
 				FLocatType fLocat = MetsFactory.eINSTANCE.createFLocatType();
