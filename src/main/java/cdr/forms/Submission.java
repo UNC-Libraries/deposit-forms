@@ -242,8 +242,15 @@ public class Submission {
 				}
 
 				FLocatType fLocat = MetsFactory.eINSTANCE.createFLocatType();
-				fLocat.setLOCTYPE(LOCTYPEType.URL);
 				fLocat.setHref(filenames.get(depositFile));
+				
+				if (depositFile.isExternal()) {
+					fLocat.setLOCTYPE(LOCTYPEType.OTHER);
+					fLocat.setOTHERLOCTYPE("tag");
+					fLocat.setUSE("STAGE");
+				} else {
+					fLocat.setLOCTYPE(LOCTYPEType.URL);
+				}
 
 				file.getFLocat().add(fLocat);
 				fileGrp.getFile().add(file);
