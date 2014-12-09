@@ -16,7 +16,14 @@
 package cdr.forms;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
+
+import org.apache.commons.codec.binary.Hex;
 
 public class DepositFile {
 	
@@ -24,6 +31,7 @@ public class DepositFile {
 	private String filename;
 	private String contentType;
 	private long size;
+	private boolean external;
 	
 	public File getFile() {
 		return file;
@@ -65,6 +73,50 @@ public class DepositFile {
 		if (!Pattern.matches("^\\.[a-zA-Z0-9]+$", extension))
 			extension = "";
 		return extension;
+	}
+	
+	public boolean isExternal() {
+		return external;
+	}
+
+	public void setExternal(boolean external) {
+		this.external = external;
+	}
+	
+	public String getHexDigest(String algorithm) throws NoSuchAlgorithmException, IOException {
+		
+		return new String(Hex.encodeHex(this.getDigest(algorithm)));
+		
+	}
+
+	private byte[] getDigest(String algorithm) throws NoSuchAlgorithmException, IOException {
+		
+		InputStream input = null;
+		
+		try {
+
+			MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+			messageDigest.reset();
+
+			input = new FileInputStream(file);
+			
+			byte[] buffer = new byte[1048576];
+			int count;
+	
+			while ((count = input.read(buffer, 0, buffer.length)) != -1) {
+				messageDigest.update(buffer, 0, count);
+			}
+	
+			return messageDigest.digest();
+			
+		} finally {
+			
+			if (input != null) {
+				input.close();
+			}
+			
+		}
+
 	}
 	
 }

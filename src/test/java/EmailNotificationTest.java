@@ -104,7 +104,6 @@ public class EmailNotificationTest {
 		
 		Form form = this.formFactory.getForm("test");
 		Deposit deposit = buildDeposit(form);
-		Submission submission = Submission.create(deposit);
 		
 		DepositResult result = new DepositResult();
 		result.setAccessURL("http://example.org/the/deposit/url");
@@ -120,7 +119,6 @@ public class EmailNotificationTest {
 		
 		Form form = this.formFactory.getForm("test");
 		Deposit deposit = buildDeposit(form);
-		Submission submission = Submission.create(deposit);
 		
 		DepositResult result = new DepositResult();
 		result.setAccessURL("http://example.org/the/deposit/url");

@@ -59,6 +59,10 @@
 	<bean id="formFactory" class="cdr.forms.CachedXMIFormFactory">
 		<property name="formPath" value="${forms.dir}" />
 	</bean>
+  
+	<bean id="administratorEmail" class="java.lang.String">
+		<constructor-arg value="${administrator.email}"/>
+	</bean>
 
 	<bean id="depositHandler" class="cdr.forms.SwordDepositHandler">
 		<property name="serviceUrl"
@@ -66,6 +70,9 @@
 		<property name="username" value="${forms.sword.username}" />
 		<property name="password" value="${forms.sword.password}" />
 		<property name="defaultContainer" value="${forms.default.container.pid}"/>
+		
+		<property name="externalPath" value="${forms.external.dir}" />
+ 		<property name="externalUriBase" value="${forms.external.uriBase}" />
 	</bean>
 	
 	<bean id="authorizationHandler" class="cdr.forms.RequestHeaderAuthorizationHandler">
