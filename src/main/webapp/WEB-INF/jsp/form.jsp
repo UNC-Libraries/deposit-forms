@@ -55,7 +55,7 @@ for (Object element: ((Deposit) request.getAttribute("deposit")).getForm().getEl
 			if (fieldObj != null && fieldObj instanceof TextInputFieldImpl) {
 				TextInputFieldImpl textField = (TextInputFieldImpl)fieldObj;
 				String urlHash = null;
-				if (textField.getVocabularyURL() != null) {
+				if (textField.getVocabularyURL() != null && !"".equals(textField.getVocabularyURL().trim())) {
 					urlHash = "" + textField.getVocabularyURL().hashCode();
 					if (!vocabURLMap.containsKey(urlHash)) {
 						List<String> vocabList = new ArrayList<String>();
