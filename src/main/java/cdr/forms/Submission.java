@@ -462,7 +462,7 @@ public class Submission {
 				if (group != null && group.trim().length() > 0) {
 					GrantType grantType = AclFactory.eINSTANCE.createGrantType();
 					grantType.setGroup(group);
-					grantType.setRole("acl:observer");
+					grantType.setRole("observer");
 					rootAccessControl.getGrant().add(grantType);
 				}
 			}
@@ -471,7 +471,7 @@ public class Submission {
 				if (group != null && group.trim().length() > 0) {
 					GrantType grantType = AclFactory.eINSTANCE.createGrantType();
 					grantType.setGroup(group);
-					grantType.setRole("acl:processor");
+					grantType.setRole("processor");
 					rootAccessControl.getGrant().add(grantType);
 				}
 			}
