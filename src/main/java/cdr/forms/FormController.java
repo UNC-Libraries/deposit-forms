@@ -223,6 +223,8 @@ public class FormController {
 			
 		}
 		
+		deposit.setAgreement(false);
+		
 		//
 		
 	    deposit.setSupplementalFiles(new DepositFile[3]);

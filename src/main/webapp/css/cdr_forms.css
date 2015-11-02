@@ -313,6 +313,30 @@ input[readonly] {
 }
 
 
+/* deposit agreement */
+
+.agreement_block h3 {
+	margin-bottom: 13px;
+	border-bottom: 1px dotted #bbb;
+}
+
+.agreement_field {
+	margin-top: 0.8em;
+}
+
+.agreement_field .agreement_checkbox {
+	float: left;
+	width: 30px;
+}
+
+.agreement_field label {
+	text-align: left;
+	float: none;
+	width: auto;
+	margin-left: 30px;
+}
+
+
 /* Autocomplete
 ----------------------------------*/
 .ui-autocomplete { 

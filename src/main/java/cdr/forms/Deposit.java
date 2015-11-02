@@ -33,6 +33,7 @@ public class Deposit {
 	private DepositFile[] supplementalFiles;
 	private List<DepositElement> elements;
 	private List<SupplementalObject> supplementalObjects;
+	private Boolean agreement;
 
 	public Form getForm() {
 		return form;
@@ -56,6 +57,14 @@ public class Deposit {
 
 	public void setReceiptEmailAddress(String receiptEmailAddress) {
 		this.receiptEmailAddress = receiptEmailAddress;
+	}
+	
+	public Boolean getAgreement() {
+		return agreement;
+	}
+
+	public void setAgreement(Boolean agreement) {
+		this.agreement = agreement;
 	}
 	
 	public List<String> getAllDepositNoticeToEmailAddresses() {

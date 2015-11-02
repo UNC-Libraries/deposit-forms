@@ -278,6 +278,17 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 			</div>
 		</div>
 	</div>
+
+	<c:if test="${not empty deposit.form.agreement}">
+		<div class="agreement_block">
+			<br/><h3>Deposit Agreement <span class="red">*</span></h3>
+			<form:errors cssClass="red" path="agreement" />
+			<div class="agreement_field">
+				<div class="agreement_checkbox"><form:checkbox path="agreement" /></div>
+				<label><c:out value="${deposit.form.agreement}"/></label>
+			</div>
+		</div>
+	</c:if>
 	
 	<div class="submit_container">
 		<c:choose>
