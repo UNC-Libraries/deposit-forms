@@ -250,6 +250,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	<c:if test="${deposit.form.canAddSupplementalFiles}">
 		<div class="file_block">
 			<br/><h3>Supplemental Files</h3>
+			<p>File size limit: <c:out value="${formattedMaxUploadSize}"/> per submission.</p>
 			<div class="indented_block">
 				<c:forEach items="${deposit.supplementalFiles}" var="file" varStatus="fileRow">
 					<div class="form_field file_field ${not empty file ? "filled" : ""}">
