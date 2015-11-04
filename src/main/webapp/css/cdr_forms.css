@@ -334,6 +334,7 @@ input[readonly] {
 	float: none;
 	width: auto;
 	margin-left: 30px;
+	font-size: 12px;
 }
 
 
