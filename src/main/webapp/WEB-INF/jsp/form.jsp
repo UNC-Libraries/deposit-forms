@@ -286,7 +286,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 			<form:errors cssClass="red" path="agreement" />
 			<div class="agreement_field">
 				<div class="agreement_checkbox"><form:checkbox path="agreement" /></div>
-				<label><c:out value="${deposit.form.agreement}"/></label>
+				<label><c:out value="${deposit.form.agreement}" escapeXml="false"/></label>
 			</div>
 		</div>
 	</c:if>
