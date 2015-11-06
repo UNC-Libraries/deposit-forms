@@ -96,12 +96,9 @@
 
 	<bean id="freemarkerConfiguration" class="freemarker.template.Configuration">
 		<property name="templateLoader">
-			<bean class="freemarker.cache.FileTemplateLoader">
-				<constructor-arg index="0" type="java.io.File">
-					<bean class="java.io.File">
-						<constructor-arg value="${forms.email.template.dir}" />
-					</bean>
-				</constructor-arg>
+			<bean class="freemarker.cache.ClassTemplateLoader">
+				<constructor-arg index="0" type="java.lang.Class" value="cdr.forms.EmailNotificationHandler" />
+				<constructor-arg index="1" value="" />
 			</bean>
 		</property>
 	</bean>
