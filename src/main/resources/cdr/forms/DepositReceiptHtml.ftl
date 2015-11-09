@@ -26,8 +26,8 @@
   <h3>${siteName}</h3>
   <p>Your submission was received by the ${siteName} at ${receivedDate?datetime}.
   Please do not reply to this message.
-  <#if form.contactEmail??>If you have any questions or concerns about your submission,
-  please contact ${form.contactName!}: ${form.contactEmail}</#if></p>
+  If you have any questions or concerns about your submission,
+  please contact <#if form.contactEmail??>${form.contactName!}: ${form.contactEmail}<#else>${administratorAddress}</#if></p>
   <p>You entered the following information on <a href="${siteUrl}/forms/${formId}.form">${form.title}</a>:
   <ul>
     <li>User: ${form.currentUser!""}</li>

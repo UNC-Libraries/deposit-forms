@@ -17,7 +17,7 @@
 -->
 Your submission was received by the ${siteName} at ${receivedDate?datetime}.
 
-Please do not reply to this message.<#if form.contactEmail??> If you have any questions or concerns about your submission, please contact ${form.contactName!}: ${form.contactEmail}</#if>
+Please do not reply to this message. If you have any questions or concerns about your submission, please contact <#if form.contactEmail??>${form.contactName!}: ${form.contactEmail}<#else>${administratorAddress}</#if>
 
 You entered the following information on ${form.title} at ${siteUrl}/forms/${formId}.form:
  * User: ${form.currentUser!""}
