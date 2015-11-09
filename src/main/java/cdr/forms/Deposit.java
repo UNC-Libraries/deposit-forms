@@ -71,9 +71,6 @@ public class Deposit {
 		
 		ArrayList<String> addresses = new ArrayList<String>();
 		
-		if (this.getReceiptEmailAddress() != null)
-			addresses.add(this.getReceiptEmailAddress());
-		
 		if (this.getForm().getEmailDepositNoticeTo() != null)
 			addresses.addAll(this.getForm().getEmailDepositNoticeTo());
 		
