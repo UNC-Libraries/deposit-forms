@@ -18,16 +18,16 @@
 			<form:input cssClass="datepicker ${port.blankDefaultDate == true ? 'blankDefault' : ''}" path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}" />
 		</c:when>
 		<c:when test="${port.datePrecision.name == 'year'}">
-			<%-- Display a select of years, from 190 in the past to 10 in the future --%>
+			<%-- Display a select of years, from 190 in the past to 50 in the future --%>
 			<form:select path="elements[${elementRow.index}].entries[${entryRow.index}].fields[${portRow.index}].value" title="${port.usage}">
 				<%-- Select the year from the form bean or the current year if none is provided --%>
 				<%-- If the port has the blankDefaultDate attribute set, present a blank option and select that if we have no value --%>
 				<c:choose>
 					<c:when test="${deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value != null}">
-						<c:set var="selectedIndex" value="${currentYear + 10 - (deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value.year + 1900)}"/>
+						<c:set var="selectedIndex" value="${currentYear + 50 - (deposit.elements[elementRow.index].entries[entryRow.index].fields[portRow.index].value.year + 1900)}"/>
 					</c:when>
 					<c:otherwise>
-						<c:set var="selectedIndex" value="${port.blankDefaultDate ? -1 : 10}"/>
+						<c:set var="selectedIndex" value="${port.blankDefaultDate ? -1 : 50}"/>
 					</c:otherwise>
 				</c:choose>
 				
@@ -45,10 +45,10 @@
 				<c:forEach var="i" begin="0" end="200">
 					<c:choose>
 						<c:when test="${i == selectedIndex}">
-							<form:option value="${currentYear - i + 10}" selected="true"/>
+							<form:option value="${currentYear - i + 50}" selected="true"/>
 						</c:when>
 						<c:otherwise>
-							<form:option value="${currentYear - i + 10}"/>
+							<form:option value="${currentYear - i + 50}"/>
 						</c:otherwise>
 					</c:choose>
 				</c:forEach>

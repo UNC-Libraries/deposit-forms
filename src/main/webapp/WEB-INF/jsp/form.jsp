@@ -109,7 +109,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 				$(this).datepicker("setDate", newDate);
 				$(this).val($.datepicker.formatDate('yy-mm', newDate));
 				$(".ui-datepicker-calendar").hide();
-			}, yearRange: "-200:+5"
+			}, yearRange: "-200:+50"
 		}).focus(function () {
 			$(".ui-datepicker-calendar").hide();
 		}).attr("readonly", true).each(function(){
@@ -123,7 +123,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	        changeYear: true,
 	        showButtonPanel: false,
 	        dateFormat: 'yy-mm-dd',
-	        yearRange: "-200:+5",
+	        yearRange: "-200:+50",
 	        beforeShow: function() {
 			}
 		}).focus(function () {
