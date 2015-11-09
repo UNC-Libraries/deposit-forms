@@ -144,6 +144,7 @@ public class EmailNotificationHandler implements NotificationHandler {
 		model.put("siteUrl", this.getSiteUrl());
 		model.put("siteName", this.getSiteName());
 		model.put("receivedDate", new Date(System.currentTimeMillis()));
+		model.put("administratorAddress", administratorAddress);
 		
 		sendReceipt(model, form, deposit.getReceiptEmailAddress());
 		sendNotice(model, form, deposit.getAllDepositNoticeToEmailAddresses());
