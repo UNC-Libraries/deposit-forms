@@ -47,6 +47,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xml.type.internal.XMLCalendar;
+import org.springframework.util.StringUtils;
 
 import crosswalk.DateInputField;
 import crosswalk.EmailInputField;
@@ -373,8 +374,39 @@ public class Submission {
 			ArrayList<DepositEntry> rootEntries = new ArrayList<DepositEntry>();
 			
 			for (DepositElement element : deposit.getElements()) {
+				
 				if (element.getFormElement() instanceof MetadataBlock && !(element.getFormElement() instanceof FileBlock)) {
-					rootEntries.addAll(element.getEntries());
+					
+					// If this isn't a repeating metadata block, just all all the entries.
+					// Otherwise, only add entries with all non-blank values.
+					
+					if (((MetadataBlock) element.getFormElement()).getMaxRepeat() == 1) {
+						
+						rootEntries.addAll(element.getEntries());
+						
+					} else {
+					
+						for (DepositEntry depositEntry : element.getEntries()) {
+							
+							boolean allBlank = true;
+							
+							for (DepositField<?> depositField : depositEntry.getFields()) {
+								Object value = depositField.getValue();
+							
+								if (value != null && StringUtils.hasText(value.toString())) {
+									allBlank = false;
+									break;
+								}
+							}
+							
+							if (allBlank == false) {
+								rootEntries.add(depositEntry);
+							}
+							
+						}
+						
+					}
+					
 				}
 			}
 			
