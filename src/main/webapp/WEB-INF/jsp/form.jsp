@@ -204,7 +204,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	<br/><br/>
 	<% } %>
 </spring:hasBindErrors>
-<p><c:out value="${deposit.form.description}"/></p>
+<p><c:out value="${deposit.form.description}" escapeXml="false"/></p>
 <form:form modelAttribute="deposit" enctype="multipart/form-data" acceptCharset="UTF-8">
 	
 	<%-- Because we have other submit buttons within the form, include a hidden submit button at
