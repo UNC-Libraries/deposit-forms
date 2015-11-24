@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.IdentityHashMap;
@@ -159,6 +160,7 @@ public class Submission {
 		
 		// Reference to the root mets:div element
 		DivType rootDiv;
+		DivType agreementDiv = null;
 		
 		// Mapping between mets:div elements and deposit entries
 		IdentityHashMap<DivType, DepositEntry> fileDivsEntries;
@@ -354,6 +356,14 @@ public class Submission {
 				
 			}
 			
+			// Add agreement file if one is set
+			if (deposit.getAgreementFile() != null) {
+				agreementDiv = makeDivForFile(filesFiles.get(deposit.getAgreementFile()));
+				agreementDiv.setID("d_" + i++);
+				agreementDiv.setLABEL1(deposit.getAgreementFile().getFilename());
+					
+				rootDiv.getDiv().add(agreementDiv);
+			}	
 		}
 		
 		
@@ -436,6 +446,9 @@ public class Submission {
 		
 		}
 		
+		if (agreementDiv != null) {
+			divsMetadata.put(agreementDiv, makeMetadata(form.getOutputProfiles(), new ArrayList<DepositEntry>()));
+		}
 		
 		// Special cases for metadata
 		
@@ -462,6 +475,21 @@ public class Submission {
 			
 			rootAccessControl.setPublished(false);
 			
+		}
+		
+		// Add access control for agreement file if one is present
+		if (agreementDiv != null) {
+			AccessControlType agreementAccessControl;
+			edu.unc.lib.schemas.acl.DocumentRoot documentRoot = (edu.unc.lib.schemas.acl.DocumentRoot) divsMetadata.get(agreementDiv).get(OutputMetadataSections.RIGHTS_MD);
+			
+			if (documentRoot.eContents().isEmpty()) {
+				agreementAccessControl = AclFactory.eINSTANCE.createAccessControlType();
+				documentRoot.setAccessControl(agreementAccessControl);
+			} else {
+				agreementAccessControl = (AccessControlType) documentRoot.eContents().get(0);
+			}
+			
+			agreementAccessControl.setPublished(false);			
 		}
 
 		// Special case: set major-related metadata if a MajorBlock is present

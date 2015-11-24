@@ -22,7 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import crosswalk.EmailInputField;
 import crosswalk.Form;
@@ -41,7 +42,8 @@ public class Deposit {
 	private List<SupplementalObject> supplementalObjects;
 	private Date agreementDate;
 	private DepositFile agreementFile;
-	private static final Logger logger = Logger.getLogger("cdr.forms.deposit");
+	private static final  Logger LOG = LoggerFactory
+			.getLogger(Deposit.class);
 
 	public Form getForm() {
 		return form;
@@ -95,16 +97,14 @@ public class Deposit {
 		if (agreementFile == null && getAgreement() && form.getAgreement() != null) {
 			try {
 				File agreementFileText = File.createTempFile("agreement", null);
-				String agreement_text = form.getAgreement();
+				String agreementText = form.getAgreement();
 					
 				SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
-				String agreement_date = DATE_FORMAT.format(this.getAgreementDate());
+				String agreementDate = DATE_FORMAT.format(this.getAgreementDate());
 				
 				PrintWriter fileText = new PrintWriter(agreementFileText);
-				fileText.println(agreement_text);
-				fileText.println("");
-				fileText.println(agreement_date);
-				fileText.println("");
+				fileText.println(agreementText);
+				fileText.println(agreementDate);
 				fileText.println(form.getCurrentUser());
 				fileText.close();		
 					
@@ -114,8 +114,8 @@ public class Deposit {
 				agreementFile.setFilename("agreement.txt");
 				agreementFile.setSize(agreementFileText.length());
 				agreementFile.setExternal(false); 
-			} catch(IOException e) {
-				logger.log(Level.WARNING, "Couldn't add agreement file", e);
+			} catch (IOException e) {
+				LOG.error("Couldn't add agreement file", e);
 				agreementFile = null;
 			} 
 		}
