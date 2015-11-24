@@ -109,7 +109,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 				$(this).datepicker("setDate", newDate);
 				$(this).val($.datepicker.formatDate('yy-mm', newDate));
 				$(".ui-datepicker-calendar").hide();
-			}, yearRange: "-200:+5"
+			}, yearRange: "-200:+50"
 		}).focus(function () {
 			$(".ui-datepicker-calendar").hide();
 		}).attr("readonly", true).each(function(){
@@ -123,7 +123,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	        changeYear: true,
 	        showButtonPanel: false,
 	        dateFormat: 'yy-mm-dd',
-	        yearRange: "-200:+5",
+	        yearRange: "-200:+50",
 	        beforeShow: function() {
 			}
 		}).focus(function () {
@@ -204,7 +204,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	<br/><br/>
 	<% } %>
 </spring:hasBindErrors>
-<p><c:out value="${deposit.form.description}"/></p>
+<p><c:out value="${deposit.form.description}" escapeXml="false"/></p>
 <form:form modelAttribute="deposit" enctype="multipart/form-data" acceptCharset="UTF-8">
 	
 	<%-- Because we have other submit buttons within the form, include a hidden submit button at
@@ -250,6 +250,7 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	<c:if test="${deposit.form.canAddSupplementalFiles}">
 		<div class="file_block">
 			<br/><h3>Supplemental Files</h3>
+			<p>File size limit: <c:out value="${formattedMaxUploadSize}"/> per submission.  File names will be retained.</p>
 			<div class="indented_block">
 				<c:forEach items="${deposit.supplementalFiles}" var="file" varStatus="fileRow">
 					<div class="form_field file_field ${not empty file ? "filled" : ""}">
@@ -278,6 +279,17 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 			</div>
 		</div>
 	</div>
+
+	<c:if test="${not empty deposit.form.agreement}">
+		<div class="agreement_block">
+			<br/><h3>Deposit Agreement <span class="red">*</span></h3>
+			<form:errors cssClass="red" path="agreement" />
+			<div class="agreement_field">
+				<div class="agreement_checkbox"><form:checkbox path="agreement" /></div>
+				<label><c:out value="${deposit.form.agreement}" escapeXml="false"/></label>
+			</div>
+		</div>
+	</c:if>
 	
 	<div class="submit_container">
 		<c:choose>

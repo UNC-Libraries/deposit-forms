@@ -53,7 +53,7 @@
 <c:forEach items="${ids}" var="id">
 	<c:set var="form" value="${forms[id]}"/>
 	<h3><a href="${id}.form"><c:out value="${form.title}"/></a></h3>
-	<p><c:out value="${form.description}"/></p>
+	<p><c:out value="${form.description}" escapeXml="false"/></p>
 </c:forEach>
 
 </div>

@@ -194,6 +194,9 @@ public class FormController {
 
 	@RequestMapping(value = "/{formId}.form", method = RequestMethod.GET)
 	public String showForm(@PathVariable String formId, Model model, HttpServletRequest request) throws PermissionDeniedException {
+
+		request.setAttribute("formattedMaxUploadSize", (getMaxUploadSize()/1000000) + "MB");
+		request.setAttribute("maxUploadSize", getMaxUploadSize());
 		
 		request.setAttribute("hasSupplementalObjectsStep", formId.equals(SUPPLEMENTAL_OBJECTS_FORM_ID));
 		
@@ -222,6 +225,8 @@ public class FormController {
 			deposit.getElements().add(depositElement);
 			
 		}
+		
+		deposit.setAgreement(false);
 		
 		//
 		
@@ -262,6 +267,9 @@ public class FormController {
 			@RequestParam(value="deposit", required=false) String submitDepositAction,
 			HttpServletRequest request,
 			HttpServletResponse response) throws PermissionDeniedException {
+
+		request.setAttribute("formattedMaxUploadSize", (getMaxUploadSize()/1000000) + "MB");
+		request.setAttribute("maxUploadSize", getMaxUploadSize());
 		
 		request.setAttribute("hasSupplementalObjectsStep", formId.equals(SUPPLEMENTAL_OBJECTS_FORM_ID));
 		

@@ -50,6 +50,12 @@ public class DepositValidator implements Validator {
 		Deposit deposit = (Deposit) target;
 		Form form = deposit.getForm();
 		
+		// If there was a deposit agreement, was the checkbox checked?
+		
+		if (form.getAgreement() != null && deposit.getAgreement() == false) {
+			errors.rejectValue("agreement", "agreementRequired", "To deposit, you must agree to the deposit agreement.");
+		}
+		
 		// Validate receipt email address
 		
 		if (deposit.getReceiptEmailAddress() != null && deposit.getReceiptEmailAddress().trim().length() > 0) {

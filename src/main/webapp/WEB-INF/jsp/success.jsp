@@ -49,7 +49,7 @@
 
 <h2>Deposit successful</h2>
 
-<p>Your deposit for <b><c:out value="${deposit.form.title}"/></b> was successful. Thank you!</p>
+<p>Your deposit for <b><c:out value="${deposit.form.title}"/></b> was successful and is being processed.</p>
 
 <p>
 If you have any questions, please contact

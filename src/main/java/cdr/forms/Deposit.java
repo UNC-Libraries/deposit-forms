@@ -16,6 +16,7 @@
 package cdr.forms;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import crosswalk.EmailInputField;
@@ -33,6 +34,7 @@ public class Deposit {
 	private DepositFile[] supplementalFiles;
 	private List<DepositElement> elements;
 	private List<SupplementalObject> supplementalObjects;
+	private Date agreementDate;
 
 	public Form getForm() {
 		return form;
@@ -58,12 +60,29 @@ public class Deposit {
 		this.receiptEmailAddress = receiptEmailAddress;
 	}
 	
+	public Date getAgreementDate() {
+		return agreementDate;
+	}
+	
+	public void setAgreementDate(Date agreementDate) {
+		this.agreementDate = agreementDate;
+	}
+	
+	public Boolean getAgreement() {
+		return agreementDate != null;
+	}
+
+	public void setAgreement(Boolean agreement) {
+		if (agreement) {
+			this.agreementDate = new Date();
+		} else {
+			this.agreementDate = null;
+		}
+	}
+	
 	public List<String> getAllDepositNoticeToEmailAddresses() {
 		
 		ArrayList<String> addresses = new ArrayList<String>();
-		
-		if (this.getReceiptEmailAddress() != null)
-			addresses.add(this.getReceiptEmailAddress());
 		
 		if (this.getForm().getEmailDepositNoticeTo() != null)
 			addresses.addAll(this.getForm().getEmailDepositNoticeTo());
