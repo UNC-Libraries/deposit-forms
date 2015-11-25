@@ -15,9 +15,15 @@
  */
 package cdr.forms;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import crosswalk.EmailInputField;
 import crosswalk.Form;
@@ -35,6 +41,9 @@ public class Deposit {
 	private List<DepositElement> elements;
 	private List<SupplementalObject> supplementalObjects;
 	private Date agreementDate;
+	private DepositFile agreementFile;
+	private static final  Logger LOG = LoggerFactory
+			.getLogger(Deposit.class);
 
 	public Form getForm() {
 		return form;
@@ -78,6 +87,40 @@ public class Deposit {
 		} else {
 			this.agreementDate = null;
 		}
+	}
+	
+	public void setAgreementFile(DepositFile agreementFile) {
+		this.agreementFile = agreementFile;
+	}
+	
+	public DepositFile getAgreementFile() { 
+		if (agreementFile == null && getAgreement() && form.getAgreement() != null) {
+			try {
+				File agreementFileText = File.createTempFile("agreement", null);
+				String agreementText = form.getAgreement();
+					
+				SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+				String agreementDate = DATE_FORMAT.format(this.getAgreementDate());
+				
+				PrintWriter fileText = new PrintWriter(agreementFileText);
+				fileText.println(agreementText);
+				fileText.println(agreementDate);
+				fileText.println(form.getCurrentUser());
+				fileText.close();		
+					
+				agreementFile = new DepositFile();
+				agreementFile.setFile(agreementFileText);
+				agreementFile.setContentType("text/plain");
+				agreementFile.setFilename("agreement.txt");
+				agreementFile.setSize(agreementFileText.length());
+				agreementFile.setExternal(false); 
+			} catch (IOException e) {
+				LOG.error("Couldn't add agreement file", e);
+				agreementFile = null;
+			} 
+		}
+			
+		return agreementFile;
 	}
 	
 	public List<String> getAllDepositNoticeToEmailAddresses() {
@@ -155,7 +198,11 @@ public class Deposit {
 		}
 		
 		if (this.getMainFile() != null)
-			files.add(this.getMainFile());
+			files.add(this.getMainFile());		
+		
+		if (this.getAgreementFile() != null) {
+			files.add(this.getAgreementFile());
+		}
 		
 		if (this.getSupplementalFiles() != null) {
 			for (DepositFile depositFile : this.getSupplementalFiles()) {
