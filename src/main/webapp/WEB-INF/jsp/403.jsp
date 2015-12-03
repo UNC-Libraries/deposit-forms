@@ -42,7 +42,7 @@
 					<div class="contentarea">
 
 <h2><c:out value="${form.title}"/></h2>
-<p><c:out value="${form.description}"/></p>
+<p><c:out value="${form.description}" escapeXml="false"/></p>
 <% if(request.getRemoteUser() != null) { %>
 <h3>Not Authorized to Deposit</h3>
 <p><c:out value="${message}"/></p>

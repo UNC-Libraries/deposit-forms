@@ -272,7 +272,7 @@ if (multipleFileSupport)
 </c:if>
 
 <h2><c:out value="${deposit.form.title}" /></h2>
-<p><c:out value="${deposit.form.description}"/></p>
+<p><c:out value="${deposit.form.description}" escapeXml="false"/></p>
 <form:form modelAttribute="deposit" method="post" enctype="multipart/form-data" id="deposit">
 
 	<br />
