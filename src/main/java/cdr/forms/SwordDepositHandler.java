@@ -216,6 +216,9 @@ public class SwordDepositHandler implements DepositHandler, ExternalDepositFileC
 		Header slugHeader = new Header("Slug", pid);
 		post.addRequestHeader(slugHeader);
 
+		Header depositReceiptHeader = new Header("mail", deposit.getReceiptEmailAddress());
+		post.addRequestHeader(depositReceiptHeader);
+
 		post.setRequestEntity(fileRequestEntity);
 
 		// Interpret the response from the SWORD endpoint
