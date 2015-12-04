@@ -13,10 +13,10 @@ public class SupplementalObjectValidator implements Validator {
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "field.required", "This field is required.");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "medium", "field.required", "This field is required.");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "dimensions", "field.required", "This field is required.");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "date", "field.required", "This field is required.");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "field.required", "Title is required.");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "medium", "field.required", "Medium is required.");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "dimensions", "field.required", "Dimensions are required.");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "date", "field.required", "Date is required.");
 	}
 
 }
