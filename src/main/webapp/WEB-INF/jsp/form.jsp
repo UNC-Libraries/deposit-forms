@@ -211,6 +211,8 @@ pageContext.setAttribute("vocabURLMap", vocabURLMap);
 	the top to act as the default. --%>
 	<input type="submit" value="submit deposit" class="hidden_top_submit"/>
 	
+	<form:errors cssClass="red" path="*" />
+	
 	<c:forEach items="${deposit.elements}" var="element" varStatus="elementRow">
 		<spring:bind path="deposit.elements[${elementRow.index}]" ignoreNestedPath="true">
 		

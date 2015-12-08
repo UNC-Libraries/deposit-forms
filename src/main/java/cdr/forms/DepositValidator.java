@@ -63,7 +63,7 @@ public class DepositValidator implements Validator {
 				InternetAddress address = new InternetAddress(deposit.getReceiptEmailAddress());
 				address.validate();
 			} catch (AddressException e) {
-				errors.rejectValue("receiptEmailAddress", "invalidEmailAddress", "You must enter a valid email address.");
+				errors.rejectValue("receiptEmailAddress", "invalidEmailAddress", "You must enter a valid email address for deposit receipt.");
 			}
 		}
 		
@@ -71,7 +71,7 @@ public class DepositValidator implements Validator {
 		
 		if (!form.isHasFileBlocks()) {
 			if (deposit.getMainFile() == null)
-				errors.rejectValue("mainFile", "file.required", "This file is required.");
+				errors.rejectValue("mainFile", "file.required", "File for deposit is required.");
 		}
 		
 		// Validate the form
@@ -99,11 +99,11 @@ public class DepositValidator implements Validator {
 								InternetAddress address = new InternetAddress((String) errors.getFieldValue(path));
 								address.validate();
 							} catch (AddressException e) {
-								errors.rejectValue(path, "invalidEmailAddress", "You must enter a valid email address.");
+								errors.rejectValue(path, "invalidEmailAddress", inputField.getLabel() + " requires a valid email address.");
 							}
 						} else if (inputField.isRequired()) {
 							String path = "elements[" + elementIndex + "].entries[" + entryIndex + "].fields[" + portIndex + "].value";
-							ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", "This field is required.");
+							ValidationUtils.rejectIfEmptyOrWhitespace(errors, path, "field.required", inputField.getLabel() + " is required.");
 						}
 						
 						portIndex++;
@@ -125,7 +125,7 @@ public class DepositValidator implements Validator {
 				for (DepositEntry entry : element.getEntries()) {
 					
 					if (fileBlock.isRequired() && entry.getFile() == null)
-						errors.rejectValue("elements[" + elementIndex + "].entries[" + entryIndex + "].file", "file.required", "This file is required.");
+						errors.rejectValue("elements[" + elementIndex + "].entries[" + entryIndex + "].file", "file.required", fileBlock.getName() + " is required.");
 					
 					entryIndex++;
 				
@@ -138,7 +138,7 @@ public class DepositValidator implements Validator {
 				MajorBlock majorBlock = (MajorBlock) element.getFormElement();
 
 				if (majorBlock.getSelectedMajor() == null) {
-					errors.rejectValue("elements[" + elementIndex + "]", "field.required", "This field is required.");
+					errors.rejectValue("elements[" + elementIndex + "]", "field.required", majorBlock.getLabel() + " is required.");
 				}
 				
 			}
