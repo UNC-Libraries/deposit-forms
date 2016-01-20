@@ -47,9 +47,9 @@
 <h3>Not Authorized to Deposit</h3>
 <p><c:out value="${message}"/></p>
 <% } else { %>
-<h3>Log In is Required</h3>
+<h3>Onyen Required</h3>
 <p><c:out value="${message}"/></p>
-<p id="login_block"><a href="/Shibboleth.sso/Login?target=%2fforms%2f${formId}.form">Log In</a></p>
+<p id="login_block">An Onyen is required to deposit using this form. <a href="/Shibboleth.sso/Login?target=%2fforms%2f${formId}.form">Log in with your Onyen</a></p>
 <% } %>
 </div>
 </div>
