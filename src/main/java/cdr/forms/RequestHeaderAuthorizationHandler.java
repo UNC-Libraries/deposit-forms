@@ -61,24 +61,32 @@ public class RequestHeaderAuthorizationHandler implements AuthorizationHandler {
 	@Override
 	public void checkPermission(String formId, Form form, HttpServletRequest request) throws PermissionDeniedException {
 		// if groups are not specified or the form is public, then no further checks
-		if(form.getAuthorizedGroups() == null || form.getAuthorizedGroups().contains("public")) return;
+		if (form.getAuthorizedGroups() == null || form.getAuthorizedGroups().contains("public")) {
+			return;
+		}
 		
 		// any user is considered authenticated
-		if(form.getAuthorizedGroups().contains("authenticated") && request.getRemoteUser() != null) return;
+		if (form.getAuthorizedGroups().contains("authenticated") && request.getRemoteUser() != null) {
+			return;
+		}
 		
-		// get header string
 		String groupsHeader = request.getHeader(getGroupsHeaderName());
-		if(request.getRemoteUser() == null) {
-			throw new PermissionDeniedException("You must first log in to use this deposit form.", form, formId);
+		
+		if (request.getRemoteUser() == null) {
+			throw new PermissionDeniedException(form, formId);
 		} else {
-			if(groupsHeader == null) {
-				throw new PermissionDeniedException("Your login is not authorized to use this form.", form, formId);
+			if (groupsHeader == null) {
+				throw new PermissionDeniedException(form, formId);
 			}
-			for(String group : groupsHeader.split(getSplitCharacter())) {
-				if(this.groupsAlwaysPermitted.contains(group)) return;
-				if(form.getAuthorizedGroups().contains(group)) return;
+			for (String group : groupsHeader.split(getSplitCharacter())) {
+				if (this.groupsAlwaysPermitted.contains(group)) {
+					return;
+				}
+				if (form.getAuthorizedGroups().contains(group)) {
+					return;
+				}
 			}
-			throw new PermissionDeniedException("Your login is not authorized to use this form.", form, formId);
+			throw new PermissionDeniedException(form, formId);
 		}
 	}
 

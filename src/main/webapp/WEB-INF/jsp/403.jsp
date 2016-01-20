@@ -43,13 +43,27 @@
 
 <h2><c:out value="${form.title}"/></h2>
 <p><c:out value="${form.description}" escapeXml="false"/></p>
-<% if(request.getRemoteUser() != null) { %>
-<h3>Not Authorized to Deposit</h3>
-<p><c:out value="${message}"/></p>
+<% if (request.getRemoteUser() != null) { %>
+  <h3>Not Authorized</h3>
+  <p>
+    Your Onyen is not authorized to deposit using this form.
+    Please contact
+    <c:choose>
+      <c:when test="${form.contactEmail != null && form.contactName != null}">
+        <c:out value="${form.contactName}"/> at <a href="mailto:${form.contactEmail}"><c:out value="${form.contactEmail}"/></a>
+      </c:when>
+      <c:when test="${form.contactEmail != null}">
+        <a href="mailto:${form.contactEmail}"><c:out value="${form.contactEmail}"/></a>
+      </c:when>
+      <c:otherwise>
+        <a href="mailto:${administratorEmail}"><c:out value="${administratorEmail}"/></a>
+      </c:otherwise>
+    </c:choose>
+    to request access.</p>
 <% } else { %>
-<h3>Log In is Required</h3>
-<p><c:out value="${message}"/></p>
-<p id="login_block"><a href="/Shibboleth.sso/Login?target=%2fforms%2f${formId}.form">Log In</a></p>
+  <h3>Onyen Login Required</h3>
+  <p>You must log in with your Onyen to deposit using this form.</p>
+  <p id="login_block"><a href="/Shibboleth.sso/Login?target=%2fforms%2f${formId}.form">Log in with your Onyen</a></p>
 <% } %>
 </div>
 </div>
