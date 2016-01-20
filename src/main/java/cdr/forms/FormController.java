@@ -599,7 +599,7 @@ public class FormController {
 		ModelAndView modelview = new ModelAndView("403");
 		modelview.addObject("formId", e.getFormId());
 		modelview.addObject("form", e.getForm());
-		modelview.addObject("message", e.getMessage()+" \nSend email to "+this.getAdministratorEmail()+" to request access.");
+		modelview.addObject("administratorEmail", getAdministratorEmail());
 		return modelview;
 	}
 
