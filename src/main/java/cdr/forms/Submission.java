@@ -34,6 +34,8 @@ import gov.loc.mods.mods.XsString;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,11 +92,9 @@ public class Submission {
 
 				try {
 					File temp = File.createTempFile("data", depositFile.getExtension(), new File(externalDepositFileConfigurationProvider.getExternalPath()));
-
-					if (depositFile.getFile().renameTo(temp))
-						depositFile.setFile(temp);
-					else
-						throw new Error("Couldn't move external file to external files directory.");
+					
+					Files.move(depositFile.getFile().toPath(), temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					depositFile.setFile(temp);
 				} catch (IOException e) {
 					throw new Error(e);
 				}
