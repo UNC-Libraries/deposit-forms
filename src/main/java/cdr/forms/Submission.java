@@ -160,7 +160,12 @@ public class Submission {
 		
 		// Reference to the root mets:div element
 		DivType rootDiv;
+		
+		// Reference to the mets:div element for the agreement (if present)
 		DivType agreementDiv = null;
+		
+		// Reference to the mets:div element for the main file (if present)
+		DivType mainFileDiv = null;
 		
 		// Mapping between mets:div elements and deposit entries
 		IdentityHashMap<DivType, DepositEntry> fileDivsEntries;
@@ -284,6 +289,8 @@ public class Submission {
 			rootDiv.setID("d_0");
 			rootDiv.setLABEL1(mainFile.getFilename());
 			
+			mainFileDiv = rootDiv;
+			
 			mets.getStructMap().add(structMap);
 			structMap.setDiv(rootDiv);
 			
@@ -303,11 +310,11 @@ public class Submission {
 			// Main file (if present)
 			
 			if (mainFile != null) {
-				DivType fileDiv = makeDivForFile(filesFiles.get(mainFile));
-				fileDiv.setID("d_" + i++);
-				fileDiv.setLABEL1(mainFile.getFilename());
+				mainFileDiv = makeDivForFile(filesFiles.get(mainFile));
+				mainFileDiv.setID("d_" + i++);
+				mainFileDiv.setLABEL1(mainFile.getFilename());
 				
-				rootDiv.getDiv().add(fileDiv);
+				rootDiv.getDiv().add(mainFileDiv);
 			}
 			
 			// Deposit entries
@@ -672,27 +679,42 @@ public class Submission {
 			
 			StructLinkType1 structLink = MetsFactory.eINSTANCE.createStructLinkType1();
 			
-			// The DepositEntry instances in this map should be guaranteed to have FileBlock instances for their formElement properties
-			// and non-null valid DepositFile instances for their file properties by construction above.
+			// Add a link for the mainFileDiv, if we have it. (This means the form doesn't have any FileBlock instances.)
 			
-			for (Entry<DivType, DepositEntry> entry : fileDivsEntries.entrySet()) {
+			if (mainFileDiv != null) {
 				
-				FileBlock fileBlock = (FileBlock) entry.getValue().getFormElement();
-				DepositFile file = (DepositFile) entry.getValue().getFile();
+				SmLinkType smLink = MetsFactory.eINSTANCE.createSmLinkType();
+				smLink.setArcrole(Link.DEFAULTACCESS.uri);
+				smLink.setXlinkFrom(rootDiv);
+				smLink.setXlinkTo(mainFileDiv);
+
+				structLink.getSmLink().add(smLink);
 				
-				if (fileBlock.isDefaultAccess() || file == mainFile) {
+			} else {
+			
+				// The DepositEntry instances in this map should be guaranteed to have FileBlock instances for their formElement properties
+				// and non-null valid DepositFile instances for their file properties by construction above.
+			
+				for (Entry<DivType, DepositEntry> entry : fileDivsEntries.entrySet()) {
+				
+					FileBlock fileBlock = (FileBlock) entry.getValue().getFormElement();
+					DepositFile file = (DepositFile) entry.getValue().getFile();
+				
+					if (fileBlock.isDefaultAccess() || file == mainFile) {
 
-					DivType fileDiv = entry.getKey();
+						DivType fileDiv = entry.getKey();
 					
-					SmLinkType smLink = MetsFactory.eINSTANCE.createSmLinkType();
-					smLink.setArcrole(Link.DEFAULTACCESS.uri);
-					smLink.setXlinkFrom(rootDiv);
-					smLink.setXlinkTo(fileDiv);
+						SmLinkType smLink = MetsFactory.eINSTANCE.createSmLinkType();
+						smLink.setArcrole(Link.DEFAULTACCESS.uri);
+						smLink.setXlinkFrom(rootDiv);
+						smLink.setXlinkTo(fileDiv);
 
-					structLink.getSmLink().add(smLink);
+						structLink.getSmLink().add(smLink);
 					
+					}
+			
 				}
-			
+				
 			}
 
 			// Only add the structLink section if there are actually links
