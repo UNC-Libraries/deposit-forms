@@ -69,7 +69,7 @@ If you have any questions, please contact
 <p>Help us improve the CDR. <a href="https://unc.az1.qualtrics.com/SE/?SID=SV_8HrpGlGgdAdieWx">Take a short survey</a>.</p>
 
 <c:if test="${deposit.form.promptForMultipleSubmissions}">
-	<p><a href="<%= request.getAttribute("formId") %>">Click here to submit another deposit.</a></p>
+	<p><a href="<%= request.getAttribute("formId") %>.form">Click here to submit another deposit.</a></p>
 </c:if>
 	
 </div>
