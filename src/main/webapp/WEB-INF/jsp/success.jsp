@@ -49,7 +49,7 @@
 
 <h2>Deposit successful</h2>
 
-<p>Your deposit for <b><c:out value="${deposit.form.title}"/></b> was successful and is being processed.</p>
+<p>Your deposit for <b><c:out value="${deposit.form.title}"/></b> was successful and is being processed. In the next hour, you should receive a deposit receipt email confirming your submission.</p>
 
 <p>
 If you have any questions, please contact
@@ -67,6 +67,8 @@ If you have any questions, please contact
 </p>
 
 <p>Help us improve the CDR. <a href="https://unc.az1.qualtrics.com/SE/?SID=SV_8HrpGlGgdAdieWx">Take a short survey</a>.</p>
+
+<p><a href="https://cdr.lib.unc.edu/">Browse the CDR</a></p>
 
 <c:if test="${deposit.form.promptForMultipleSubmissions}">
 	<p><a href="<%= request.getAttribute("formId") %>.form">Click here to submit another deposit.</a></p>
